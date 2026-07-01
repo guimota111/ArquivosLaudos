@@ -1,0 +1,33 @@
+# Deploy automático para o Firebase Hosting.
+# Publica o site a cada push na branch principal (main/master) e também
+# pode ser disparado manualmente na aba "Actions" do GitHub.
+#
+# Pré-requisito (feito uma única vez): criar o secret FIREBASE_SERVICE_ACCOUNT
+# no repositório. Veja DEPLOY.md, seção "Deploy automático".
+name: Deploy no Firebase Hosting
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          channelId: live
+          projectId: arquivolaudos
