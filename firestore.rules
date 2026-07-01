@@ -1,0 +1,13 @@
+rules_version = '2';
+
+// ATENÇÃO: acesso ABERTO conforme escolha do projeto (sem login).
+// Qualquer pessoa com o link pode ler e escrever na coleção `nodes`.
+// Para restringir depois (ex.: exigir login), troque `if true` por
+// `if request.auth != null` e habilite o Firebase Authentication.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /nodes/{nodeId} {
+      allow read, write: if true;
+    }
+  }
+}
