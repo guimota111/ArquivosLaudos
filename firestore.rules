@@ -1,13 +1,17 @@
 rules_version = '2';
 
-// ATENÇÃO: acesso ABERTO conforme escolha do projeto (sem login).
-// Qualquer pessoa com o link pode ler e escrever na coleção `nodes`.
-// Para restringir depois (ex.: exigir login), troque `if true` por
-// `if request.auth != null` e habilite o Firebase Authentication.
+// Acesso RESTRITO: somente usuários autenticados (login por e-mail/senha)
+// podem ler e escrever na coleção `nodes`.
+// Habilite o provedor "E-mail/senha" em Authentication no console do Firebase
+// e crie os usuários que terão acesso.
 service cloud.firestore {
   match /databases/{database}/documents {
     match /nodes/{nodeId} {
-      allow read, write: if true;
+      allow read, write: if request.auth != null;
+    }
+    // Favoritas: cada usuário só acessa o próprio documento.
+    match /favorites/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
   }
 }

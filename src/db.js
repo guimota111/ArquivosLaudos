@@ -25,9 +25,15 @@ import {
   serverTimestamp,
   getDocs,
   writeBatch,
+  increment,
+  setDoc,
+  arrayUnion,
+  arrayRemove,
 } from 'firebase/firestore'
 
+// Dois arquivos separados (roots virtuais): laudos e notas.
 export const ROOT_ID = 'root'
+export const ROOT_NOTAS_ID = 'root_notas'
 
 const nodesCol = collection(db, 'nodes')
 
@@ -39,6 +45,15 @@ const INITIAL_CATEGORIES = [
   'Hemato',
   'Dermato',
 ]
+
+// Observa em tempo real TODOS os nós (usado pelo menu em árvore, que monta
+// a hierarquia completa no cliente). O acervo é pequeno, então uma única
+// assinatura da coleção é suficiente.
+export function subscribeAll(cb) {
+  return onSnapshot(nodesCol, (snap) => {
+    cb(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+  })
+}
 
 // Observa em tempo real os filhos diretos de um nó pai.
 export function subscribeChildren(parentId, cb) {
@@ -54,18 +69,57 @@ export function subscribeChildren(parentId, cb) {
   })
 }
 
-export function addNode({ parentId, type, label, content = '' }) {
+export function addNode({
+  parentId,
+  type,
+  label,
+  content = '',
+  icon = '',
+  tags = [],
+  createdBy = '',
+}) {
   return addDoc(nodesCol, {
     parentId,
     type,
     label: label.trim(),
     content,
+    icon,
+    tags,
+    copyCount: 0,
+    createdBy,
     createdAt: serverTimestamp(),
   })
 }
 
+// Incrementa (atômico) o contador de vezes que a máscara foi copiada.
+export function incrementCopy(id) {
+  return updateDoc(doc(db, 'nodes', id), { copyCount: increment(1) })
+}
+
+// ----- Favoritas por usuário (coleção `favorites`, 1 doc por usuário) -----
+const favDoc = (userId) => doc(db, 'favorites', userId)
+
+export function subscribeFavorites(userId, cb) {
+  return onSnapshot(favDoc(userId), (snap) => {
+    cb(snap.exists() ? snap.data().nodeIds || [] : [])
+  })
+}
+
+export function setFavorite(userId, nodeId, isFav) {
+  return setDoc(
+    favDoc(userId),
+    { nodeIds: isFav ? arrayUnion(nodeId) : arrayRemove(nodeId) },
+    { merge: true },
+  )
+}
+
 export function updateNode(id, data) {
   return updateDoc(doc(db, 'nodes', id), data)
+}
+
+// Move um nó para dentro de outro pai (arrastar-e-soltar no modo edição).
+export function moveNode(id, newParentId) {
+  return updateDoc(doc(db, 'nodes', id), { parentId: newParentId })
 }
 
 // Remove um nó e, recursivamente, todos os seus descendentes.

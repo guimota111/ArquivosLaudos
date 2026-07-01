@@ -1,16 +1,18 @@
 # Arquivo de Laudos
 
-Site em formato de **mapa mental / fluxograma** para organizar laudos.
+Site em formato de **menu com submenus** (árvore) para organizar laudos.
 
 A página inicial mostra apenas um botão central **LAUDOS**. Ao clicar, abre-se
-um mapa mental onde cada categoria aparece ligada ao centro. O usuário pode:
+um menu em árvore onde as categorias podem ser expandidas/recolhidas. O usuário
+pode:
 
-- Criar novas categorias e **ramificar categorias dentro de categorias** (sem limite de profundidade);
-- Entrar em uma categoria para vê-la como novo centro do mapa;
+- Criar novas categorias e **subcategorias dentro de categorias** (sem limite de profundidade);
+- Expandir/recolher qualquer submenu;
+- **Selecionar** uma categoria (clique) para que novos itens sejam criados dentro dela;
 - **Armazenar laudos** em qualquer nível, com título e conteúdo;
 - Renomear e excluir categorias/laudos (excluir uma categoria remove tudo dentro dela).
 
-Exemplo de navegação:
+Exemplo de hierarquia:
 `LAUDOS → Gastro → Estômago → Gastrite → Erosiva` → laudo "Gastrite erosiva".
 
 Categorias iniciais criadas automaticamente na primeira abertura:
@@ -19,25 +21,46 @@ Categorias iniciais criadas automaticamente na primeira abertura:
 ## Stack
 
 - **React + Vite** (frontend)
-- **React Flow** (visual de mapa mental)
 - **Firebase Firestore** (backend simples, dados em tempo real)
+- **Firebase Authentication** (login por e-mail/senha)
 
-O acervo é **único e compartilhado**: todos os usuários veem e editam o mesmo
-mapa. O acesso é **aberto (sem login)** conforme configurado.
+O acervo é **único e compartilhado** entre os usuários autenticados. O acesso
+exige **login por e-mail e senha**.
+
+## Autenticação (obrigatória)
+
+O app agora abre numa **tela de login**. Para funcionar:
+
+1. No [console do Firebase](https://console.firebase.google.com/) →
+   **Authentication** → **Sign-in method**, habilite o provedor
+   **E-mail/senha**.
+2. Em **Authentication → Users**, clique em **Add user** e cadastre o
+   e-mail/senha de cada pessoa que terá acesso (não há cadastro público — o
+   acesso é controlado por você).
+3. Publique as regras do Firestore (já exigem login):
+   `firebase deploy --only firestore:rules`.
+
+> Não há tela de cadastro no app, de propósito: o acesso é fechado, pensado
+> para ser cobrado no futuro. Você cria/remove usuários pelo console.
 
 ## Modelo de dados (Firestore)
 
-Coleção única `nodes`. Cada documento é uma categoria ou um laudo:
+Coleção única `nodes`. Cada documento é uma **categoria**, um **laudo** ou uma
+**nota**:
 
 ```
 {
-  parentId: "root" | "<id do pai>",   // "root" = nível de topo (filhos do botão LAUDOS)
-  type: "category" | "laudo",
+  parentId: "root" | "root_notas" | "<id do pai>",
+  type: "category" | "laudo" | "nota",
   label: "Gastrite",
-  content: "texto do laudo (só para type = laudo)",
+  content: "texto da máscara (laudo/nota)",
+  icon: "🧠",          // ícone da pasta (só categorias)
+  tags: ["urgente"],   // etiquetas (laudos/notas)
   createdAt: <timestamp>
 }
 ```
+
+`root` = topo do arquivo **LAUDOS**; `root_notas` = topo do arquivo **NOTAS**.
 
 ## Rodar localmente
 
