@@ -1,0 +1,1035 @@
+[
+  {
+    "id": "1km61xrtaior3lGGon3G",
+    "parentId": "kUQ151Wcv8BvYjuQHIAt",
+    "tags": [
+      "colon",
+      "he"
+    ],
+    "createdAt": "2026-07-01T20:02:29.916Z",
+    "icon": "",
+    "label": "Eosinofílica",
+    "content": "- Mucosa colônica com infiltrado inflamatório rico em eosinófilos (ver nota).\n. Mucosa exibindo infiltrado eosinofílico intraepitelial elevado, acompanhado de alterações\nreativas do revestimento epitelial.\n. Na lâmina própria observam-se congestão vascular e infiltrado mononuclear aumentado,\npreferencialmente na porção superior da mucosa.\n. Epitélio apresenta organização arquitetural regular e maturação celular preservada, sem atrofia.\n. Não foram detectados granulomas, parasitas, espessamento colágeno subepitelial ou linfocitose intraepitelial.\n. Não foram observados sinais de malignidade nesta amostra.",
+    "type": "laudo",
+    "copyCount": 0
+  },
+  {
+    "id": "1qfXy4xPh8MhKUhvPmFQ",
+    "type": "category",
+    "label": "Colo uterino",
+    "createdAt": "2026-07-01T19:45:22.076Z",
+    "content": "",
+    "tags": [],
+    "parentId": "ZubzbCw9fLqthkisQVV5",
+    "icon": "📁"
+  },
+  {
+    "id": "2Fil1mBFZzzuwoLFV3Fa",
+    "createdAt": "2026-07-01T18:55:32.673Z",
+    "label": "Cólon",
+    "content": "",
+    "parentId": "t6mHVmFWMo8h3hs8JrzR",
+    "type": "category"
+  },
+  {
+    "id": "2Xl3AGD7LJwNpXmyKjn9",
+    "content": "Imunoexpressão negativa para PAN-TRK.\n\nNota: a negatividade para PAN-TRK exibe excelente correlação com a ausência de fusão dos genes NTRK, com especificidade de até 100% dos casos.\n\nReferência:\nHechtman JF, Benayed R, Hyman DM, Drilon A, Zehir A, Frosina D, Arcila ME, Dogan S, Klimstra DS, Ladanyi M, Jungbluth AA. Pan-Trk Immunohistochemistry Is an Efficient and Reliable Screen for the Detection of NTRK Fusions. Am J Surg Pathol. 2017 Nov 41(11): 1547-1551. doi: 10.1097/PAS.0000000000000911. PMID: 28719467, PMCID: PMC5636652.\n",
+    "createdBy": "laraartav@gmail.com",
+    "copyCount": 0,
+    "parentId": "ddMh8BMk6Za3ZzUHDNM7",
+    "type": "nota",
+    "label": "PAN-TRK NEGATIVO",
+    "tags": [],
+    "icon": "",
+    "createdAt": "2026-07-16T20:44:33.422Z"
+  },
+  {
+    "id": "3LhYCEBGTiw0TLc5eWFM",
+    "parentId": "Xe2SYG5ftVY6j3NTGpCU",
+    "label": "Crônica",
+    "type": "category",
+    "createdAt": "2026-07-01T19:15:43.641Z",
+    "content": ""
+  },
+  {
+    "id": "5DSF9iFpqAZbS75SX0Wp",
+    "label": "Vagina",
+    "type": "category",
+    "tags": [],
+    "parentId": "DXAMDXomMAoeA0GEZwyt",
+    "createdAt": "2026-07-01T19:45:54.153Z",
+    "content": "",
+    "icon": "📁"
+  },
+  {
+    "id": "5vxw1eJRlKBjWNmEJlfN",
+    "label": "Erosiva",
+    "icon": "",
+    "parentId": "P7HR2bm6g03sH8ICdimc",
+    "tags": [],
+    "createdBy": "guimota1@gmail.com",
+    "copyCount": 0,
+    "content": "- Gastropatia erosiva.\n. Revestimento epitelial exibe focos de erosão e alterações reativas/regenerativas.\n. Infiltrado inflamatório mononuclear leve na lâmina própria.\n. Atrofia: ausente.\n. Metaplasia intestinal: ausente.\n. A pesquisa de ﻿Helicobacter pylori﻿ (Giemsa) resultou negativa.\n. Ausência de evidências de malignidade nesta amostra.\n\nNota: os achados morfológicos são sugestivos de lesão química. Recomenda-se correlação com demais dados clínicos.",
+    "type": "laudo",
+    "createdAt": "2026-07-25T18:47:48.889Z"
+  },
+  {
+    "id": "6SELK9dRpCH8esbXZ5Im",
+    "parentId": "TDz7LvVtRnKSGOAd3En8",
+    "createdAt": "2026-07-01T19:57:10.227Z",
+    "content": "- Pólipo linfoide.\n. Mucosa colônica apresentando densidade e composição glandular com aspecto usual.\n. Revestimento epitelial levemente reativa recobrindo folículo linfoide sem atipias, com centro\ngerminativo proeminente.\n. Ausência de evidências de malignidade na presente amostra.",
+    "type": "laudo",
+    "copyCount": 1,
+    "tags": [
+      "Pólipo",
+      "HE"
+    ],
+    "label": "Pólipo linfoide",
+    "icon": ""
+  },
+  {
+    "id": "6m7g3Vi1Kp9zMsLsEQ1U",
+    "type": "laudo",
+    "content": "* Adenoma hipofisário.\n\nNota: foi solicitado estudo imunoistoquímico, cujo resultado seguirá em laudo complementar.",
+    "createdBy": "guimota1@gmail.com",
+    "copyCount": 0,
+    "parentId": "wmaP1ciypR6BeJa26HCK",
+    "label": "HE",
+    "icon": "",
+    "tags": [],
+    "createdAt": "2026-07-02T12:02:25.544Z"
+  },
+  {
+    "id": "6pzHTdZeSyccpsBymiC5",
+    "parentId": "SqlivcZGnDfqwyXIlpP4",
+    "label": "Barret SEM suspeita endoscópica",
+    "createdAt": "2026-07-01T19:03:26.914Z",
+    "type": "laudo",
+    "content": "- Metaplasia intestinal em mucosa de transição esôfago-gástrica (ver nota).\n\nNota: os achados morfológicos podem corresponder a esôfago de Barrett em contextos clínico e endoscópico adequados. Ausência de displasia na presente amostra."
+  },
+  {
+    "id": "70O3RNvNn9a1O8tojvJ4",
+    "label": "Gastrite",
+    "content": "",
+    "type": "category",
+    "createdAt": "2026-07-01T19:21:19.149Z",
+    "parentId": "j6G6V1dnBIgIgZmwUQCx"
+  },
+  {
+    "id": "74bygOBLSr3mSpQFENMP",
+    "label": "Amígdala",
+    "tags": [],
+    "icon": "📁",
+    "createdAt": "2026-07-01T20:13:58.382Z",
+    "parentId": "C95tZyq8hHi4zSODPlxS",
+    "createdBy": "guimota1@gmail.com",
+    "copyCount": 0,
+    "content": "",
+    "type": "category"
+  },
+  {
+    "id": "7dcUmD4bmlU3wMA48J34",
+    "createdAt": "2026-07-01T18:52:07.766Z",
+    "label": "Lesões melanocíticas",
+    "type": "category",
+    "content": "",
+    "parentId": "V9EM0eVtIckKI8je8OUH"
+  },
+  {
+    "id": "7iJ75YIOK0bZawmtf0Nt",
+    "type": "category",
+    "parentId": "lqsxUwrdst6dzYb7fCoD",
+    "label": "Baço",
+    "icon": "📁",
+    "createdAt": "2026-07-01T19:42:31.582Z",
+    "content": "",
+    "tags": []
+  },
+  {
+    "id": "89zZ959hqBgymSM2G8ry",
+    "createdAt": "2026-07-01T19:44:32.174Z",
+    "icon": "📁",
+    "label": "Bexiga",
+    "tags": [],
+    "parentId": "CRjD1JVmhf1JfBkUICvH",
+    "type": "category",
+    "content": ""
+  },
+  {
+    "id": "8AxQguis0PHHIcin1MTj",
+    "createdAt": "2026-07-01T20:14:20.961Z",
+    "type": "category",
+    "parentId": "C95tZyq8hHi4zSODPlxS",
+    "label": "Tumores odontogênicos",
+    "content": "",
+    "createdBy": "guimota1@gmail.com",
+    "copyCount": 0,
+    "tags": [],
+    "icon": "🦷"
+  },
+  {
+    "id": "8gE3xu6kqCUrnIbzCHHm",
+    "tags": [],
+    "parentId": "GrN0yAhHui1uUHkwyoA5",
+    "icon": "📁",
+    "label": "Meningiomas",
+    "content": "",
+    "createdAt": "2026-07-01T19:43:34.199Z",
+    "type": "category"
+  },
+  {
+    "id": "9UgiToLOof9Eqxc2moE3",
+    "parentId": "CRjD1JVmhf1JfBkUICvH",
+    "type": "category",
+    "createdAt": "2026-07-01T19:44:41.901Z",
+    "label": "Testículo",
+    "content": "",
+    "tags": [],
+    "icon": "📁"
+  },
+  {
+    "id": "BWqjdUEXuRbtcONpMNBg",
+    "content": "- Xantoma gástrico.\n- Mucosa gástrica com epitélio glandular preservado, sem atipiais.\n- A lâmina própria exibe agregados de histiócitos espumosos contendo lipídeos em seu citoplasma e discreto infiltrado inflamatório linfomonocitário, edema e congestão.\n- Ausência de evidências de malignidade.",
+    "type": "laudo",
+    "parentId": "KPO0OeciONNBqikoWvrO",
+    "createdAt": "2026-07-01T19:19:41.396Z",
+    "label": "Xantoma gástrico"
+  },
+  {
+    "id": "BX6DztNSOL8EA9mkaEjC",
+    "parentId": "GrN0yAhHui1uUHkwyoA5",
+    "createdAt": "2026-07-01T19:42:55.785Z",
+    "type": "category",
+    "content": "",
+    "tags": [],
+    "label": "Gliomas",
+    "icon": "📁"
+  },
+  {
+    "id": "C95tZyq8hHi4zSODPlxS",
+    "icon": "🧒",
+    "label": "Cabeça e pescoço",
+    "parentId": "root",
+    "content": "",
+    "type": "category",
+    "createdAt": "2026-07-01T18:27:13.894Z"
+  },
+  {
+    "id": "CB1hOGaGhQ7fTVQPCqVX",
+    "createdBy": "guimota1@gmail.com",
+    "copyCount": 0,
+    "label": "Cavidade oral",
+    "type": "category",
+    "tags": [],
+    "content": "",
+    "icon": "👄",
+    "parentId": "C95tZyq8hHi4zSODPlxS",
+    "createdAt": "2026-07-01T20:14:34.217Z"
+  },
+  {
+    "id": "CRjD1JVmhf1JfBkUICvH",
+    "type": "category",
+    "content": "",
+    "createdAt": "2026-07-01T19:44:11.396Z",
+    "parentId": "root",
+    "icon": "📁",
+    "tags": [],
+    "label": "Uro"
+  },
+  {
+    "id": "CRkwvwHBz0tCmMxGAwLp",
+    "parentId": "lqsxUwrdst6dzYb7fCoD",
+    "createdAt": "2026-07-01T18:51:16.308Z",
+    "content": "",
+    "label": "Linfomas",
+    "type": "category"
+  },
+  {
+    "id": "DXAMDXomMAoeA0GEZwyt",
+    "createdAt": "2026-07-01T19:44:58.034Z",
+    "type": "category",
+    "label": "Ginecologia",
+    "parentId": "root",
+    "tags": [],
+    "icon": "📁",
+    "content": ""
+  },
+  {
+    "id": "EZep50EzseCXAg9DERo9",
+    "type": "laudo",
+    "content": "- Pólipo hiperplásico/inflamatório.\n. Mucosa retal apresentando criptas revestidas por epitélio cilíndrico do tipo intestinal sem atipias, algumas com dilatação cística.\n. Na lâmina própria, há acentuação do infiltrado inflamatório misto, edema e proliferação de vasos. Há focos de erosão com formação de tecido de granulação.\n. Ausência de evidências de malignidade.",
+    "copyCount": 0,
+    "label": "Hiperplásico/inflamatório",
+    "icon": "",
+    "parentId": "TDz7LvVtRnKSGOAd3En8",
+    "createdAt": "2026-07-01T19:58:20.258Z",
+    "tags": [
+      "polipo",
+      "HE"
+    ]
+  },
+  {
+    "id": "F4POwE3KpE13XU4zTRdy",
+    "parentId": "2Fil1mBFZzzuwoLFV3Fa",
+    "tags": [],
+    "copyCount": 0,
+    "icon": "📁",
+    "label": "Colites",
+    "content": "",
+    "createdAt": "2026-07-01T20:01:57.286Z",
+    "type": "category"
+  },
+  {
+    "id": "G72I1DpTQqaMlcrdUxOd",
+    "parentId": "t6mHVmFWMo8h3hs8JrzR",
+    "type": "category",
+    "label": "Delgado",
+    "createdAt": "2026-07-01T18:55:25.716Z",
+    "content": ""
+  },
+  {
+    "id": "G8Yi4eCXxCa8ICVwRq3E",
+    "label": "TEG",
+    "content": "",
+    "parentId": "t6mHVmFWMo8h3hs8JrzR",
+    "type": "category",
+    "createdAt": "2026-07-01T18:55:11.064Z"
+  },
+  {
+    "id": "GrN0yAhHui1uUHkwyoA5",
+    "type": "category",
+    "parentId": "root",
+    "tags": [],
+    "createdAt": "2026-07-01T19:42:43.138Z",
+    "label": "Neuro",
+    "content": "",
+    "icon": "🧠"
+  },
+  {
+    "id": "GtFeezo3vs8DHsJLgH6t",
+    "type": "category",
+    "content": "",
+    "label": "Medula óssea",
+    "createdAt": "2026-07-01T18:51:08.806Z",
+    "parentId": "lqsxUwrdst6dzYb7fCoD"
+  },
+  {
+    "id": "HJJAL1j1fQNtvpl8y9cr",
+    "content": "",
+    "tags": [],
+    "copyCount": 0,
+    "createdBy": "guimota1@gmail.com",
+    "parentId": "root",
+    "icon": "📁",
+    "createdAt": "2026-07-01T20:20:49.781Z",
+    "label": "Mama",
+    "type": "category"
+  },
+  {
+    "id": "HiTvzn0LSKrbgcLBvVia",
+    "content": "",
+    "type": "category",
+    "copyCount": 0,
+    "createdBy": "guimota1@gmail.com",
+    "label": "Nasofaringe",
+    "createdAt": "2026-07-01T20:14:07.619Z",
+    "parentId": "C95tZyq8hHi4zSODPlxS",
+    "icon": "📁",
+    "tags": []
+  },
+  {
+    "id": "ITYsWXoF5Q9FNXkfyyqY",
+    "label": "Próstata",
+    "tags": [],
+    "createdAt": "2026-07-01T19:44:26.881Z",
+    "icon": "📁",
+    "content": "",
+    "type": "category",
+    "parentId": "CRjD1JVmhf1JfBkUICvH"
+  },
+  {
+    "id": "JRVSOpPJ7SLTwcoFxz8X",
+    "createdBy": "guimota1@gmail.com",
+    "copyCount": 0,
+    "type": "laudo",
+    "parentId": "Uw5ZjqIUjW9J7d0tEk1H",
+    "icon": "",
+    "tags": [],
+    "createdAt": "2026-07-03T13:18:09.584Z",
+    "label": "Angiopatia amiloide cerebral",
+    "content": "* Amostra constituída por hemorragia intraparenquimatosa cerebral associado a processo inflamatório crônico agudizado. Ausência de neoplasia na amostra.\n. Presença discreta de depósito amiloide em parede de vasos leptomeníngeos e intraparenquimatosos evidenciada pela coloração Vermelho Congo.\n\nNota: os achados morfológicos podem estar associados à Angiopatia Amiloide Cerebral. É necessária estreita correlação com dados clínicos para estabelecer diagnóstico definitivo."
+  },
+  {
+    "id": "KPO0OeciONNBqikoWvrO",
+    "type": "category",
+    "parentId": "j6G6V1dnBIgIgZmwUQCx",
+    "content": "",
+    "label": "Outros",
+    "createdAt": "2026-07-01T19:19:27.913Z"
+  },
+  {
+    "id": "LA2vdslsf5LmCmSYzfmp",
+    "content": "- Mucosa esofágica sem particularidades histológicas.\n. Ausência de eosinófilos e parasitas.\n. Ausência de evidências de malignidade.",
+    "type": "laudo",
+    "copyCount": 1,
+    "parentId": "tyDUQOOsTp54Smfqqtyy",
+    "label": "Normal",
+    "createdAt": "2026-07-01T19:04:22.035Z"
+  },
+  {
+    "id": "OlKvGRCiGxIXqIsvUW5J",
+    "parentId": "tyDUQOOsTp54Smfqqtyy",
+    "label": "Pólipos",
+    "content": "",
+    "type": "category",
+    "createdAt": "2026-07-01T19:16:23.772Z"
+  },
+  {
+    "id": "P7HR2bm6g03sH8ICdimc",
+    "copyCount": 0,
+    "createdBy": "guimota1@gmail.com",
+    "type": "category",
+    "parentId": "j6G6V1dnBIgIgZmwUQCx",
+    "icon": "📁",
+    "createdAt": "2026-07-25T18:47:09.307Z",
+    "tags": [],
+    "content": "",
+    "label": "Gastropatias"
+  },
+  {
+    "id": "PJG586CYCPqlPMlB6NNo",
+    "parentId": "ZubzbCw9fLqthkisQVV5",
+    "label": "Corpo uterino",
+    "type": "category",
+    "tags": [],
+    "content": "",
+    "createdAt": "2026-07-01T19:45:28.211Z",
+    "icon": "📁"
+  },
+  {
+    "id": "QSqnTk4NDKZcwcakqb4t",
+    "icon": "",
+    "createdAt": "2026-07-02T13:56:47.554Z",
+    "tags": [],
+    "content": "* Meningioma transicional (grau 1 da OMS SNC).\n. Índice mitótico: 0 mitoses em 10 campos de grande aumento.\n. Necrose: não detectada.\n. Invasão de parênquima cerebral: não detectada.",
+    "parentId": "8gE3xu6kqCUrnIbzCHHm",
+    "type": "laudo",
+    "label": "Meningioma transicional",
+    "copyCount": 0,
+    "createdBy": "guimota1@gmail.com"
+  },
+  {
+    "id": "RuXo8lpfyrq9P4opiVVg",
+    "icon": "🟢",
+    "content": "",
+    "label": "Medula óssea normal",
+    "createdAt": "2026-07-01T19:41:18.607Z",
+    "tags": [],
+    "type": "category",
+    "parentId": "GtFeezo3vs8DHsJLgH6t"
+  },
+  {
+    "id": "So0DYXYZe7HWk0j0VYDR",
+    "content": "- Esofagite crônica rica em eosinófilos.\n. Epitélio escamoso apresentando infiltrado eosinofílico elevado, exibindo degranulação, sem formação de coleções.\n. A pesquisa de parasitas resultou negativa.\n. Contagem de eosinófilos em campo de maior aumento, em cada amostra:\n. Ausência de evidências de malignidade nesta amostra.\n\n\nNota: os achados morfológicos são compatíveis com esofagite eosinofílica. Recomenda-se correlação com demais dados clínicos e endoscópicos.",
+    "icon": "",
+    "parentId": "3LhYCEBGTiw0TLc5eWFM",
+    "label": "rica em eosinófilos",
+    "createdAt": "2026-07-01T19:33:38.489Z",
+    "type": "laudo"
+  },
+  {
+    "id": "SqlivcZGnDfqwyXIlpP4",
+    "content": "",
+    "label": "Barret",
+    "type": "category",
+    "createdAt": "2026-07-01T19:18:53.919Z",
+    "parentId": "tyDUQOOsTp54Smfqqtyy"
+  },
+  {
+    "id": "TDz7LvVtRnKSGOAd3En8",
+    "label": "Pólipos",
+    "createdAt": "2026-07-01T19:56:37.761Z",
+    "tags": [],
+    "icon": "💡",
+    "copyCount": 0,
+    "content": "",
+    "parentId": "2Fil1mBFZzzuwoLFV3Fa",
+    "type": "category"
+  },
+  {
+    "id": "Toon0KGhfANJg6NIall9",
+    "copyCount": 0,
+    "createdBy": "guimota1@gmail.com",
+    "content": "",
+    "type": "category",
+    "icon": "📁",
+    "parentId": "C95tZyq8hHi4zSODPlxS",
+    "tags": [],
+    "label": "Laringe",
+    "createdAt": "2026-07-01T20:14:45.886Z"
+  },
+  {
+    "id": "Uw5ZjqIUjW9J7d0tEk1H",
+    "createdBy": "guimota1@gmail.com",
+    "copyCount": 0,
+    "icon": "📁",
+    "tags": [],
+    "parentId": "GrN0yAhHui1uUHkwyoA5",
+    "type": "category",
+    "label": "Não neoplásico",
+    "createdAt": "2026-07-03T13:17:54.687Z",
+    "content": ""
+  },
+  {
+    "id": "V9EM0eVtIckKI8je8OUH",
+    "label": "Dermato",
+    "createdAt": "2026-07-01T18:27:01.022Z",
+    "parentId": "root",
+    "content": "",
+    "type": "category"
+  },
+  {
+    "id": "VoMIrd84TEG02RtBdS3F",
+    "copyCount": 1,
+    "parentId": "3LhYCEBGTiw0TLc5eWFM",
+    "type": "laudo",
+    "content": "- Esofagite crônica moderada.\n. Mucosa esofágica exibindo hiperplasia basal e alongamento das papilas, acompanhadas de reação epitelial, com focos de aumento do volume nuclear e edema intercelular, sem atipias\n. Infiltrado inflamatório mononuclear moderado.\n. Ausência de eosinófilos e parasitas.\n. Ausência de evidências de malignidade.",
+    "createdAt": "2026-07-01T19:10:23.493Z",
+    "label": "Moderada"
+  },
+  {
+    "id": "WVVm8KCPEavIxuIw23yg",
+    "tags": [
+      "colon",
+      "he"
+    ],
+    "icon": "",
+    "content": "- Melanose coli.\n. Mucosa colônica com arquitetura de criptas preservada e número habitual de células caliciformes.\n. Lâmina própria com infiltrado inflamatório linfoplasmocitário e histiócitos contendo pigmento acastanhado intracitoplasmático de permeio.\n. Ausência de criptite.\n\nNotas:\n1) Não foram detectados granulomas, parasitas, espessamento colágeno subepitelial e linfocitose intraepitelial.\n2) Ausência de evidências de malignidade.",
+    "createdAt": "2026-07-01T20:00:45.744Z",
+    "label": "Melanose Coli",
+    "copyCount": 1,
+    "type": "laudo",
+    "parentId": "hNm2b1y44yTe4VlqKiCA"
+  },
+  {
+    "id": "Xe2SYG5ftVY6j3NTGpCU",
+    "parentId": "tyDUQOOsTp54Smfqqtyy",
+    "type": "category",
+    "label": "Esofagite",
+    "createdAt": "2026-07-01T19:09:58.911Z",
+    "content": ""
+  },
+  {
+    "id": "YAVNVAtopl3eY2JlSJ2f",
+    "createdAt": "2026-07-01T19:13:54.698Z",
+    "type": "laudo",
+    "parentId": "Xe2SYG5ftVY6j3NTGpCU",
+    "label": "Fúngica",
+    "content": "- Esofagite fúngica.\n. Epitélio escamoso apresenta infiltrado neutrofílico e alterações reativas, evidenciadas por\nalongamento de papilas e hiperplasia da camada basal, sem atipias.\n. A pesquisa de fungos resultou positiva.\n. Ausência de eosinófilos.\n. Ausência de evidências de malignidade."
+  },
+  {
+    "id": "Ybo5Oun1MMtkKpOD0p0b",
+    "copyCount": 0,
+    "tags": [],
+    "icon": "📁",
+    "parentId": "2Fil1mBFZzzuwoLFV3Fa",
+    "label": "Normal",
+    "createdAt": "2026-07-01T19:58:59.371Z",
+    "content": "",
+    "type": "category"
+  },
+  {
+    "id": "ZubzbCw9fLqthkisQVV5",
+    "label": "Útero",
+    "icon": "📁",
+    "tags": [],
+    "createdAt": "2026-07-01T19:45:09.260Z",
+    "parentId": "DXAMDXomMAoeA0GEZwyt",
+    "type": "category",
+    "content": ""
+  },
+  {
+    "id": "aNUaiAXlKW0J3YrrtuAO",
+    "parentId": "KPO0OeciONNBqikoWvrO",
+    "label": "Alterações reativas discretas",
+    "content": "- Mucosa com alterações reativas discretas.\n. Mucosa de antro e corpo exibindo alterações reativas discretas com revestimento epitelial levemente reativo, mantendo organização regular e maturação preservada.\n. Atrofia: ausente.\n. Metaplasia intestinal: ausente.\n. A pesquisa de Helicobacter pylori (Giemsa) resultou negativa.\n. Ausência de evidências de malignidade.",
+    "createdAt": "2026-07-01T19:20:30.133Z",
+    "type": "laudo"
+  },
+  {
+    "id": "bTX2aN9IWguaTwPhRQYe",
+    "type": "category",
+    "parentId": "C95tZyq8hHi4zSODPlxS",
+    "createdBy": "guimota1@gmail.com",
+    "copyCount": 0,
+    "createdAt": "2026-07-01T20:13:50.228Z",
+    "icon": "📁",
+    "content": "",
+    "tags": [],
+    "label": "Cavidade nasal"
+  },
+  {
+    "id": "cD5oxzK2PhDAJLX5w7DA",
+    "content": "",
+    "label": "Tireoide",
+    "createdAt": "2026-07-01T18:51:46.475Z",
+    "parentId": "C95tZyq8hHi4zSODPlxS",
+    "type": "category"
+  },
+  {
+    "id": "cbLvEaXhKhpRSin4ZjNE",
+    "type": "category",
+    "createdBy": "guimota1@gmail.com",
+    "copyCount": 0,
+    "content": "",
+    "parentId": "lUYFcISXbkepubxtgCJe",
+    "createdAt": "2026-07-01T20:15:39.263Z",
+    "icon": "📁",
+    "tags": [],
+    "label": "Multifocal"
+  },
+  {
+    "id": "cnByN1Bmmu2n1H3BfNsV",
+    "content": "",
+    "parentId": "cD5oxzK2PhDAJLX5w7DA",
+    "createdAt": "2026-07-01T20:19:18.221Z",
+    "type": "category",
+    "tags": [],
+    "copyCount": 0,
+    "label": "Medular",
+    "createdBy": "guimota1@gmail.com",
+    "icon": "📁"
+  },
+  {
+    "id": "cu8yQysDfJiHvLZ1OylI",
+    "content": "",
+    "type": "category",
+    "parentId": "GtFeezo3vs8DHsJLgH6t",
+    "createdAt": "2026-07-01T19:41:57.489Z",
+    "icon": "⚫",
+    "tags": [],
+    "label": "Mieloproliferativas"
+  },
+  {
+    "id": "dCvzlXjx7kfOakKxVaH6",
+    "parentId": "DXAMDXomMAoeA0GEZwyt",
+    "label": "Ovário",
+    "createdAt": "2026-07-01T19:45:36.216Z",
+    "type": "category",
+    "tags": [],
+    "icon": "📁",
+    "content": ""
+  },
+  {
+    "id": "ddMh8BMk6Za3ZzUHDNM7",
+    "createdAt": "2026-07-01T19:30:35.489Z",
+    "parentId": "root_notas",
+    "label": "IHQ",
+    "icon": "🔬",
+    "content": "",
+    "type": "category"
+  },
+  {
+    "id": "dgpxALDgaJHehsqoidTd",
+    "createdAt": "2026-07-01T18:52:13.846Z",
+    "type": "category",
+    "content": "",
+    "parentId": "V9EM0eVtIckKI8je8OUH",
+    "label": "Pele inflamatória"
+  },
+  {
+    "id": "fKr5p9W31nnIJs4b45nN",
+    "content": "- Esofagite crônica discreta.\n. Mucosa esofágica exibindo hiperplasia basal e alongamento das papilas, acompanhadas de reação epitelial, sem atipias.\n. Infiltrado inflamatório mononuclear leve.\n. Ausência de eosinófilos e parasitas.\n. Ausência de evidências de malignidade.",
+    "createdAt": "2026-07-01T19:05:12.129Z",
+    "label": "Esofagite leve",
+    "copyCount": 1,
+    "parentId": "3LhYCEBGTiw0TLc5eWFM",
+    "type": "laudo"
+  },
+  {
+    "id": "fLivQlMJiR8M6QDSF441",
+    "content": "",
+    "icon": "🧬",
+    "label": "Molecular",
+    "createdAt": "2026-07-01T19:30:22.329Z",
+    "parentId": "root_notas",
+    "type": "category"
+  },
+  {
+    "id": "hFMk9BDx6WDsl7WlEggC",
+    "icon": "🟡",
+    "label": "Alterações reativas",
+    "parentId": "GtFeezo3vs8DHsJLgH6t",
+    "content": "",
+    "tags": [],
+    "createdAt": "2026-07-01T19:41:33.761Z",
+    "type": "category"
+  },
+  {
+    "id": "hNm2b1y44yTe4VlqKiCA",
+    "tags": [],
+    "parentId": "2Fil1mBFZzzuwoLFV3Fa",
+    "createdAt": "2026-07-01T19:59:58.460Z",
+    "icon": "📁",
+    "label": "Outros",
+    "content": "",
+    "copyCount": 0,
+    "type": "category"
+  },
+  {
+    "id": "iIFqxK29ZxjySe6JhGB5",
+    "icon": "⚕️",
+    "createdAt": "2026-07-01T19:23:15.261Z",
+    "parentId": "root_notas",
+    "type": "category",
+    "label": "Bichos",
+    "content": ""
+  },
+  {
+    "id": "iOOx0pm1fnXpJjTVOUvb",
+    "parentId": "C95tZyq8hHi4zSODPlxS",
+    "createdAt": "2026-07-01T18:51:53.571Z",
+    "type": "category",
+    "label": "Glândula salivar",
+    "content": ""
+  },
+  {
+    "id": "ibEdSpM3gZEZ6D040Gnn",
+    "createdBy": "guimota1@gmail.com",
+    "copyCount": 0,
+    "icon": "",
+    "parentId": "z2Ij4jXjlh0SPPFGPct6",
+    "tags": [],
+    "content": "- Carcinoma papilífero da tireoide, com as seguintes características:\n- Procedimento: tireoidectomia total.\n- Focalidade: unifocal.\n- Localização: lobo esquerdo.\n- Tamanho tumoral (T): 0,6 cm.\n- Tipo histológico: carcinoma papilífero, tipo clássico.\n- Invasão vascular (angioinvasão): não detectada.\n- Invasão linfática: não detectada.\n- Invasão perineural: não identificada.\n- Extensão extratireoidiana microscópica: presente em tecido fibroconjuntivo.\n- Limites radiais: livres de neoplasia.\n- Índice mitótico: 1 mitose/2 mm².\n- Necrose tumoral: não detectada.\n- Outros achados:\n- Doença nodular folicular da tireoide (Bócio coloide multinodular) e tireoidite linfocítica.\n- Detectado um segmento de paratireoide em lobo tireoidiano direito.\n- Detectado 1 linfonodo peritireoidiano livre de neoplasia (0/1).\n- Total de linfonodos avaliados: metástase em 5 linfonodos de 25 avaliados (5/25).",
+    "type": "laudo",
+    "label": "Unifocal",
+    "createdAt": "2026-07-01T20:16:29.439Z"
+  },
+  {
+    "id": "icW8IayW07udw0fAgihP",
+    "type": "laudo",
+    "parentId": "OlKvGRCiGxIXqIsvUW5J",
+    "copyCount": 2,
+    "content": "- Papiloma escamoso.\n. Lesão formada por epitélio escamoso hiperplástico, recobrindo papilas delgadas e ramificadas.\n. Revestimento epitelial aparece reativo, mas com maturação celular preservada e organização\nregular, sem atipia nuclear.\n. Ausência de evidências de malignidade.",
+    "createdAt": "2026-07-01T19:17:03.138Z",
+    "label": "Papiloma escamoso",
+    "tags": []
+  },
+  {
+    "id": "j6G6V1dnBIgIgZmwUQCx",
+    "createdAt": "2026-07-01T18:55:20.103Z",
+    "type": "category",
+    "parentId": "t6mHVmFWMo8h3hs8JrzR",
+    "label": "Estômago",
+    "content": ""
+  },
+  {
+    "id": "kAExAIDTni35wgU10aIQ",
+    "icon": "🦴",
+    "content": "",
+    "type": "category",
+    "createdAt": "2026-07-01T19:29:29.910Z",
+    "label": "Partes moles e osso",
+    "parentId": "root"
+  },
+  {
+    "id": "kDQ2FXkrMozIlnaumYdQ",
+    "label": "Ulcerada",
+    "parentId": "3LhYCEBGTiw0TLc5eWFM",
+    "copyCount": 1,
+    "content": "- Esofagite ulcerada.\n. Amostra exibe tecido de fundo de úlcera permeado por infiltrado inflamatório misto\n. Epitélio escamoso adjacente exibe alterações epiteliais reativas, com aumento do volume\nnuclear e edema intercelular, sem atipias.\n. A pesquisa parasitas resultou negativa.\n. Ausência de eosinófilos.\n. Ausência de evidências de malignidade.",
+    "type": "laudo",
+    "createdAt": "2026-07-01T19:13:03.005Z"
+  },
+  {
+    "id": "kEzOmxIbLbWmYNQ1T3fJ",
+    "label": "Eosinofílica",
+    "createdAt": "2026-07-01T19:15:06.994Z",
+    "content": "- Esofagite crônica rica em eosinófilos.\n. Epitélio escamoso apresentando infiltrado eosinofílico elevado, exibindo degranulação, sem\nformação de coleções.\n. A pesquisa de parasitas resultou negativa.\n. Contagem de eosinófilos em campo de maior aumento, em cada amostra:\n\nNota: Os achados morfológicos são compatíveis com esofagite eosinofílica. Recomenda-se correlação com demais dados clínicos e endoscópicos.",
+    "parentId": "lPynZRY67xrMnfys5mhp",
+    "copyCount": 2,
+    "type": "laudo"
+  },
+  {
+    "id": "kJcUCEVc3lfNTQ1AF4vd",
+    "copyCount": 2,
+    "createdBy": "guimota1@gmail.com",
+    "tags": [],
+    "icon": "",
+    "parentId": "wmaP1ciypR6BeJa26HCK",
+    "content": "* O quadro morfológico, associado ao perfil imunoistoquímico, corrobora o diagnóstico de Adenoma hipofisário lactotrófico.",
+    "label": "Prolactinoma",
+    "createdAt": "2026-07-02T12:01:14.597Z",
+    "type": "laudo"
+  },
+  {
+    "id": "kUQ151Wcv8BvYjuQHIAt",
+    "copyCount": 0,
+    "label": "Eosinofílica",
+    "tags": [],
+    "icon": "📁",
+    "createdAt": "2026-07-01T20:02:05.411Z",
+    "content": "",
+    "type": "category",
+    "parentId": "F4POwE3KpE13XU4zTRdy"
+  },
+  {
+    "id": "lPynZRY67xrMnfys5mhp",
+    "parentId": "Xe2SYG5ftVY6j3NTGpCU",
+    "content": "",
+    "createdAt": "2026-07-01T19:15:53.447Z",
+    "label": "Eosinofílica",
+    "type": "category"
+  },
+  {
+    "id": "lUYFcISXbkepubxtgCJe",
+    "content": "",
+    "label": "Papilífero",
+    "createdAt": "2026-07-01T20:15:14.709Z",
+    "icon": "📁",
+    "tags": [],
+    "createdBy": "guimota1@gmail.com",
+    "copyCount": 0,
+    "type": "category",
+    "parentId": "cD5oxzK2PhDAJLX5w7DA"
+  },
+  {
+    "id": "lqsxUwrdst6dzYb7fCoD",
+    "icon": "🩸",
+    "parentId": "root",
+    "createdAt": "2026-07-01T18:22:11.779Z",
+    "type": "category",
+    "content": "",
+    "label": "Hemato"
+  },
+  {
+    "id": "mCm7JykmSB79LdNjt5ig",
+    "label": "Pênis",
+    "parentId": "CRjD1JVmhf1JfBkUICvH",
+    "tags": [],
+    "icon": "📁",
+    "createdAt": "2026-07-01T19:44:47.140Z",
+    "type": "category",
+    "content": ""
+  },
+  {
+    "id": "mDlXDYuLbQklKnfoVSaU",
+    "label": "TEG sem metaplasia",
+    "tags": [],
+    "parentId": "G8Yi4eCXxCa8ICVwRq3E",
+    "copyCount": 3,
+    "content": "- Esofagite crônica discreta.\n- Mucosa do tipo gástrico com hiperplasia foveolar e processo inflamatório crônico discreto (ver nota).\n. Ausência de evidências de malignidade nesta amostra.\n\nNota: Ausência de metaplasia intestinal na presente amostra. Os achados podem corresponder a reepitelização colunar do esôfago distal. Recomenda-se correlação com demais dados clínicos e endoscópicos.",
+    "createdAt": "2026-07-01T18:56:05.280Z",
+    "type": "laudo"
+  },
+  {
+    "id": "n3Ynk6360cNB1RInXfaI",
+    "createdAt": "2026-07-02T12:00:50.025Z",
+    "parentId": "GrN0yAhHui1uUHkwyoA5",
+    "content": "",
+    "type": "category",
+    "label": "Hipófise",
+    "icon": "📁",
+    "tags": [],
+    "createdBy": "guimota1@gmail.com",
+    "copyCount": 0
+  },
+  {
+    "id": "nlDNBppeQ4se34XLUpwt",
+    "tags": [],
+    "icon": "",
+    "copyCount": 1,
+    "createdBy": "laraartav@gmail.com",
+    "label": "Acantose glicogênica",
+    "parentId": "OlKvGRCiGxIXqIsvUW5J",
+    "createdAt": "2026-07-02T14:04:21.754Z",
+    "type": "laudo",
+    "content": "- Mucosa esofágica exibindo epitélio escamoso acantótico, com maturação celular ordenada, sem atipias.\n. Em células das camadas intermediária e superficial, observa-se citoplasma claro e espumoso - ver nota.\n. Ausência de sinais de malignidade nesta amostra.\n\nNota: os achados histológicos sugerem Acantose glicogênica. Recomenda-se correlação com demais dados clínicos e endoscópicos."
+  },
+  {
+    "id": "oFELcTHvKhjBwuMT2Wz7",
+    "label": "Citologia",
+    "parentId": "root",
+    "tags": [],
+    "copyCount": 0,
+    "createdBy": "guimota1@gmail.com",
+    "icon": "📁",
+    "content": "",
+    "createdAt": "2026-07-01T20:20:55.232Z",
+    "type": "category"
+  },
+  {
+    "id": "p9UurmuJYbQdhQCWQbSM",
+    "createdAt": "2026-07-21T14:38:13.969Z",
+    "content": "- Mucosa duodenal com irregularidade vilositária, presença de alguns vilos bem desenvolvidos e áreas de redução de relação vilo/cripta (ver notas).\n. Linfocitose intraepitelial em contagem não significativa.\n. Relação vilo/cripta diminuída (2/1).\n. Ausência de parasitas.\n. Ausência de evidências de malignidade.\n. Foram realizados recortes aprofundados da presente amostra.\n \nNotas:\n1) As biópsias duodenais mostram um padrão de lesão de malabsorção, incluindo atrofia vilositária e hiperplasia de criptas, porém com linfocitose intraepitelial discreta (até 7 linfócitos para 20 enterócitos).\n2) Os achados são inespecíficos, mas levantam um diagnóstico diferencial incluindo doença celíaca, reação de hipersensibilidade a proteínas não-glúten, supercrescimento bacteriano grave, desnutrição crônica e distúrbios de desregulação imune (por exemplo, imunodeficiência comum variável e enteropatia autoimune).\n3) Ressaltamos que os constituintes normais esperados estão presentes (isto é, plasmócitos, células caliciformes, células de Paneth e células enteroendócrinas).\n4) Correlação com informações clínicas, sorológicas e microbiológicas é necessária para diagnóstico definitivo.\n \nReferência: Villanacci V, Vanoli A, Leoncini G, Arpa G, Salviato T, Bonetti LR, Baronchelli C, Saragoni L, Parente P. Celiac disease: histology-differential diagnosis-complications. A practical approach. Pathologica. 2020 Sep;112(3):186-196. doi: 10.32074/1591-951X-157. PMID: 33179621; PMCID: PMC7931573",
+    "tags": [],
+    "parentId": "G72I1DpTQqaMlcrdUxOd",
+    "icon": "",
+    "label": "Duodeno com atrofia sem linfocitose",
+    "type": "laudo",
+    "copyCount": 0,
+    "createdBy": "guimota1@gmail.com"
+  },
+  {
+    "id": "pdAbEU86eXeT5kfzQMXZ",
+    "parentId": "SqlivcZGnDfqwyXIlpP4",
+    "copyCount": 1,
+    "content": "- Esôfago de Barrett sem displasia.\n- Mucosa aparece revestida por epitélio colunar composto por células caliciformes, intermitente entre células absortivas intermediárias, exibindo organização regular e maturação preservada, sem atipia nuclear.\n- Esofagite crônica moderada.\n- Ausência de evidências de malignidade.",
+    "label": "Barret sem displasia COM suspeita endoscópica",
+    "createdAt": "2026-07-01T19:00:36.633Z",
+    "type": "laudo"
+  },
+  {
+    "id": "pfMNhRNFJWHAZMcF9yY9",
+    "content": "",
+    "icon": "🔴",
+    "tags": [],
+    "parentId": "GtFeezo3vs8DHsJLgH6t",
+    "label": "Mielodiplásicas",
+    "type": "category",
+    "createdAt": "2026-07-01T19:42:08.801Z"
+  },
+  {
+    "id": "qVFzGmI6hX1wO5r1np7k",
+    "createdBy": "guimota1@gmail.com",
+    "copyCount": 0,
+    "type": "laudo",
+    "parentId": "cbLvEaXhKhpRSin4ZjNE",
+    "icon": "",
+    "tags": [],
+    "label": "Medular",
+    "content": "- Carcinoma medular da tireoide, com as seguintes características:\n- Procedimento: tireoidectomia total.\n- Focalidade: unifocal.\n- Localização: lobo esquerdo.\n- Tamanho tumoral (T): 2,0 x 1,8 cm.\n- Tipo histológico: Carcinoma medular da tireoide.\n- Grau histológico (IMTCGS): baixo grau.\n. Necrose tumoral: ausente.\n. Índice mitótico: 1 mitose por 2 mm².\n. Índice de proliferação (KI-67):\n- Margem cirúrgica circunferencial: livre de neoplasia.\n- Invasão vascular (angioinvasão): não identificada.\n- Invasão linfática: não identificada.\n- Invasão perineural: não identificada.\n- Extensão extratireoidiana: não detectada.\n- Detectado dois segmentos de paratireoide aderidos aos lobos tireoidianos esquerdo e direito, com estrutura geral preservada.",
+    "createdAt": "2026-07-01T20:19:35.894Z"
+  },
+  {
+    "id": "qhiT1cs9MzvVnTk7qVCW",
+    "copyCount": 2,
+    "content": "- Heterotopia de mucosa gástrica em esôfago.\n. Mucosa gástrica heterotópica em esôfago composto por glândulas fúndicas, recobertas por epitélio foveolar, sem atipia.\n. Na lâmina própria, leve edema e infiltrado mononuclear leve.\n. Ausência de evidências de malignidade nesta amostra.",
+    "label": "Ectopia gástrica",
+    "type": "laudo",
+    "createdAt": "2026-07-01T19:17:53.227Z",
+    "tags": [],
+    "parentId": "OlKvGRCiGxIXqIsvUW5J"
+  },
+  {
+    "id": "sM9aEKaE1a1Nai9nw5Sy",
+    "parentId": "cbLvEaXhKhpRSin4ZjNE",
+    "type": "laudo",
+    "content": "- Carcinoma papilífero da tireoide, multifocal, com as seguintes características:\n- Procedimento: tireoidectomia total.\n- Focalidade: multifocal (4 focos).\n- Localização e tamanho: lobo direito (1 foco macroscópico medindo 0,8 cm), transição lobo direito/ístmo (1 foco macroscópico medindo 2,1 cm ) e lobo esquerdo (2 focos microscópicos medindo 0,2 cm cada).\n- Tipos histológicos:\n.. Nódulo em lobo direito: Carcinoma papilífero, variante células altas (70%) e tipo clássico (30%).\n.. Nódulo em transição lobo direito/ístmo: Carcinoma papilífero, variante células altas (70%) e tipo clássico (30%).\n.. Nódulos em lobo esquerdo: carcinoma papilífero, tipo clássico (100%).\n- Invasão vascular (angioinvasão): não detectada.\n- Invasão linfática: não detectada.\n- Invasão perineural: não identificada.\n- Extensão extratireoidiana microscópica: presente em tecido fibroconjuntivo.\n- Limites radiais: livres de neoplasia.\n- Índice mitótico: 1 mitose/2 mm².\n- Necrose tumoral: não detectada.\n- Outros achados:\n- Doença nodular folicular da tireoide (Bócio coloide multinodular) e tireoidite linfocítica.\n- Detectado tecido tímico livre de neoplasia.\n\n**Estadiamento patológico (AJCC 8ªed.):** pT2(m).",
+    "createdAt": "2026-07-01T20:18:01.407Z",
+    "label": "Multifocal",
+    "createdBy": "guimota1@gmail.com",
+    "copyCount": 0,
+    "icon": "",
+    "tags": []
+  },
+  {
+    "id": "seLvjIahmOJQM2sGDOQ9",
+    "createdAt": "2026-07-03T14:04:11.646Z",
+    "label": "Trauma",
+    "tags": [],
+    "icon": "",
+    "parentId": "7iJ75YIOK0bZawmtf0Nt",
+    "type": "laudo",
+    "createdBy": "guimota1@gmail.com",
+    "copyCount": 0,
+    "content": "* Amostra constituída por baço com hiperplasia da polpa branca e áreas de hemorragia intraparenquimatosa.\n\nNota: os achados morfológicos corroboram o diagnóstico de lesão esplênica traumática"
+  },
+  {
+    "id": "t6mHVmFWMo8h3hs8JrzR",
+    "content": "",
+    "label": "Gastro",
+    "createdAt": "2026-07-01T18:22:34.907Z",
+    "type": "category",
+    "parentId": "root"
+  },
+  {
+    "id": "tyDUQOOsTp54Smfqqtyy",
+    "parentId": "t6mHVmFWMo8h3hs8JrzR",
+    "createdAt": "2026-07-01T18:55:04.809Z",
+    "type": "category",
+    "content": "",
+    "label": "Esôfago"
+  },
+  {
+    "id": "vrRQJLVISQlbbazR73bo",
+    "label": "Ulcerada",
+    "createdAt": "2026-07-01T19:15:57.890Z",
+    "parentId": "Xe2SYG5ftVY6j3NTGpCU",
+    "content": "",
+    "type": "category"
+  },
+  {
+    "id": "wmaP1ciypR6BeJa26HCK",
+    "label": "Adenoma",
+    "tags": [],
+    "icon": "📁",
+    "createdAt": "2026-07-02T12:00:58.061Z",
+    "content": "",
+    "type": "category",
+    "copyCount": 0,
+    "createdBy": "guimota1@gmail.com",
+    "parentId": "n3Ynk6360cNB1RInXfaI"
+  },
+  {
+    "id": "z2Ij4jXjlh0SPPFGPct6",
+    "copyCount": 0,
+    "parentId": "lUYFcISXbkepubxtgCJe",
+    "createdBy": "guimota1@gmail.com",
+    "label": "Unifocal",
+    "type": "category",
+    "content": "",
+    "tags": [],
+    "icon": "📁",
+    "createdAt": "2026-07-01T20:15:30.535Z"
+  },
+  {
+    "id": "z9I3coyBe3J7G91yA5Je",
+    "createdAt": "2026-07-01T19:20:49.083Z",
+    "label": "Normal",
+    "type": "category",
+    "content": "",
+    "parentId": "j6G6V1dnBIgIgZmwUQCx"
+  },
+  {
+    "id": "zKHJ7HHG6DjKVDFQk8Ao",
+    "icon": "",
+    "createdAt": "2026-07-01T19:59:28.972Z",
+    "label": "Normal",
+    "tags": [
+      "colon",
+      "he"
+    ],
+    "content": "- Mucosa colônica sem particularidades histológicas.\n. Mucosa colônica com arquitetura de criptas preservada e número habitual de células caliciformes.\n. Lâmina própria com infiltrado inflamatório linfoplasmocitário com alguns eosinófilos de permeio. Ausência de criptite.\n. Não foram detectados granulomas, parasitas, espessamento colágeno subepitelial e linfocitose intraepitelial.\n. Ausência de evidências de malignidade.",
+    "copyCount": 0,
+    "type": "laudo",
+    "parentId": "Ybo5Oun1MMtkKpOD0p0b"
+  },
+  {
+    "id": "zQcGEfSKhqdGDzwaxqXX",
+    "label": "Pólipo inflamatório/sentinela",
+    "copyCount": 1,
+    "createdAt": "2026-07-01T19:18:37.469Z",
+    "type": "laudo",
+    "parentId": "OlKvGRCiGxIXqIsvUW5J",
+    "content": "- Pólipo inflamatório/sentinela.\n. Mucosa gástrica apresentando conformação polipoide, hiperplasia foveolar e glândulas\nrevestidas por epitélio colunar com intensas alterações reativas.\n. Na lâmina própria, há acentuação do infiltrado inflamatório misto, edema e proliferação de vasos. Há focos de erosão com formação de tecido de granulação.\n. A pesquisa de parasitas resultou negativa.\n. A pesquisa de H. pylori resultou negativa.\n\nNota: Mucosa com intensas alterações reativas. Recomenda-se nova amostragem após tratamento."
+  },
+  {
+    "id": "ziGODVfzjMHmYk99PsZC",
+    "createdAt": "2026-07-01T19:21:09.026Z",
+    "content": "- Mucosa sem particularidades histológicas.\n. Mucosa de antro e corpo/fundo com revestimento habitual, mantendo organização regular e maturação preservada.\n. A lâmina própria leve infiltrado mononuclear, sem atividade neutrofílica.\n. Atrofia: ausente.\n. Metaplasia intestinal: ausente.\n. A pesquisa de Helicobacter pylori (Giemsa) resultou negativa.\n. Ausência de evidências de malignidade.",
+    "type": "laudo",
+    "label": "Normal",
+    "parentId": "z9I3coyBe3J7G91yA5Je"
+  },
+  {
+    "id": "znrdCSFKfik0B37vyTep",
+    "type": "category",
+    "parentId": "DXAMDXomMAoeA0GEZwyt",
+    "createdAt": "2026-07-01T19:45:41.360Z",
+    "content": "",
+    "icon": "📁",
+    "label": "Trompas",
+    "tags": []
+  }
+]
