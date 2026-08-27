@@ -129,6 +129,24 @@ function writeLocalFavs(uid, ids) {
   }
 }
 
+// Layout de celular. O CSS cuida da aparência; este hook existe para o que
+// depende de comportamento — num toque só, abrir a pasta além de selecioná-la.
+const MOBILE_QUERY = '(max-width: 720px)'
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(
+    () => window.matchMedia?.(MOBILE_QUERY).matches ?? false,
+  )
+  useEffect(() => {
+    const mq = window.matchMedia?.(MOBILE_QUERY)
+    if (!mq) return
+    const onChange = (e) => setIsMobile(e.matches)
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [])
+  return isMobile
+}
+
 export default function App() {
   const [user, setUser] = useState(undefined) // undefined = carregando
   // Nome do usuário mantido em estado próprio: logo após o cadastro o
@@ -384,6 +402,7 @@ function ProfileModal({ currentName, email, onSaved, onClose }) {
 }
 
 function MenuApp({ user, displayName, onNameChange }) {
+  const isMobile = useIsMobile()
   const [nodes, setNodes] = useState([])
   const [loading, setLoading] = useState(true)
   const [profileOpen, setProfileOpen] = useState(false)
@@ -654,7 +673,13 @@ function MenuApp({ user, displayName, onNameChange }) {
   const renderRows = (parentId, depth) => {
     const kids = childrenOf.get(parentId) || []
     return kids.map((node) => {
-      const indent = { paddingLeft: 12 + depth * 20 }
+      // No celular o recuo é menor e trava depois de alguns níveis: sem
+      // isso, uma hierarquia funda não deixa largura para o nome do item.
+      const indent = {
+        paddingLeft: isMobile
+          ? 8 + Math.min(depth, 6) * 12
+          : 12 + depth * 20,
+      }
 
       if (node.type === 'category') {
         const isOpen = expanded.has(node.id)
@@ -680,9 +705,16 @@ function MenuApp({ user, displayName, onNameChange }) {
               </button>
               <button
                 className="menu-main"
-                onClick={() => setSelectedId(node.id)}
-                onDoubleClick={() => toggle(node.id)}
-                title="Clique para selecionar · duplo-clique para abrir"
+                onClick={() => {
+                  setSelectedId(node.id)
+                  if (isMobile) toggle(node.id)
+                }}
+                onDoubleClick={() => !isMobile && toggle(node.id)}
+                title={
+                  isMobile
+                    ? 'Toque para abrir'
+                    : 'Clique para selecionar · duplo-clique para abrir'
+                }
               >
                 <span className="menu-icon">{node.icon || '📁'}</span>
                 <span className="menu-label">{node.label}</span>
@@ -767,7 +799,9 @@ function MenuApp({ user, displayName, onNameChange }) {
           <span className="search-icon">🔎</span>
           <input
             className="search-input"
-            placeholder="Buscar categoria, título ou texto do laudo…"
+            placeholder={
+              isMobile ? 'Buscar…' : 'Buscar categoria, título ou texto do laudo…'
+            }
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -781,44 +815,46 @@ function MenuApp({ user, displayName, onNameChange }) {
             </button>
           )}
         </div>
-        <div className="add-target">
-          Adicionar em: <b>{addTargetLabel}</b>
-          {selectedNode && (
+        <div className="menubar-actions">
+          <div className="add-target">
+            Adicionar em: <b>{addTargetLabel}</b>
+            {selectedNode && (
+              <button
+                className="clear-select"
+                title="Voltar a adicionar no topo do arquivo"
+                onClick={() => setSelectedId(currentArchive)}
+              >
+                ✕
+              </button>
+            )}
+          </div>
+          <div className="toolbar">
             <button
-              className="clear-select"
-              title="Voltar a adicionar no topo do arquivo"
-              onClick={() => setSelectedId(currentArchive)}
+              className="btn btn-cat"
+              onClick={() => setModal({ kind: 'add-category' })}
             >
-              ✕
+              + {selectedNode ? 'Subcategoria' : 'Categoria'}
             </button>
-          )}
-        </div>
-        <div className="toolbar">
-          <button
-            className="btn btn-cat"
-            onClick={() => setModal({ kind: 'add-category' })}
-          >
-            + {selectedNode ? 'Subcategoria' : 'Categoria'}
-          </button>
-          <button
-            className={`btn ${isNotas ? 'btn-nota' : 'btn-laudo'}`}
-            onClick={() =>
-              setModal({ kind: isNotas ? 'add-nota' : 'add-laudo' })
-            }
-          >
-            + {isNotas ? 'Nota' : 'Laudo'}
-          </button>
-          <button
-            className={`btn ${editMode ? 'primary' : ''}`}
-            onClick={() => {
-              setEditMode((m) => !m)
-              setDragId(null)
-              setDropId(null)
-            }}
-            title="Ativar/desativar mover itens arrastando"
-          >
-            {editMode ? '✓ Concluir' : '✏️ Mover itens'}
-          </button>
+            <button
+              className={`btn ${isNotas ? 'btn-nota' : 'btn-laudo'}`}
+              onClick={() =>
+                setModal({ kind: isNotas ? 'add-nota' : 'add-laudo' })
+              }
+            >
+              + {isNotas ? 'Nota' : 'Laudo'}
+            </button>
+            <button
+              className={`btn btn-move ${editMode ? 'primary' : ''}`}
+              onClick={() => {
+                setEditMode((m) => !m)
+                setDragId(null)
+                setDropId(null)
+              }}
+              title="Ativar/desativar mover itens arrastando"
+            >
+              {editMode ? '✓ Concluir' : '✏️ Mover itens'}
+            </button>
+          </div>
         </div>
         <div className="user-box">
           <button
@@ -963,8 +999,11 @@ function MenuApp({ user, displayName, onNameChange }) {
                       </button>
                       <button
                         className="menu-main"
-                        onClick={() => setSelectedId(root.id)}
-                        onDoubleClick={() => toggle(root.id)}
+                        onClick={() => {
+                          setSelectedId(root.id)
+                          if (isMobile) toggle(root.id)
+                        }}
+                        onDoubleClick={() => !isMobile && toggle(root.id)}
                         title={`Arquivo de ${root.label}`}
                       >
                         <span className="menu-icon">{root.icon}</span>
@@ -1087,8 +1126,7 @@ function MaskPanel({
     return (
       <div className="mask-panel empty">
         <p>
-          Selecione um <b>laudo</b> ou uma <b>nota</b> à esquerda para
-          visualizar a máscara aqui.
+          Selecione um <b>laudo</b> ou uma <b>nota</b> para ver a máscara.
         </p>
       </div>
     )
@@ -1113,6 +1151,9 @@ function MaskPanel({
 
   return (
     <div className="mask-panel">
+      <button className="mask-back" onClick={onClose}>
+        ‹ Voltar
+      </button>
       <div className="mask-head">
         <div className="mask-titles">
           <span className="mask-path">{trail.join(' › ')}</span>
