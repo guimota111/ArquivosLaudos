@@ -53,6 +53,25 @@ O nome pode ser alterado depois: clique no seu nome no canto superior direito
 do app. Contas antigas (criadas pelo console, sem nome) aparecem como
 **"Definir meu nome"** até que um nome seja informado.
 
+## No celular
+
+Abaixo de 720px de largura o app troca de layout — uma tela por vez, em vez
+das duas colunas do desktop:
+
+- **Cabeçalho enxuto** (título + usuário numa linha, busca na outra) e a
+  **lista ocupando a tela toda**;
+- **Ações fixas no rodapé**, ao alcance do polegar, com o indicador de
+  *Adicionar em: …* sempre à vista;
+- **Um toque numa pasta abre e seleciona** (no desktop segue clique para
+  selecionar, duplo-clique para abrir);
+- A **máscara abre em tela cheia**, com *‹ Voltar* no topo;
+- Modais sobem como **folha a partir de baixo**, com campos de 16px (evita o
+  zoom automático do iOS) e alvos de toque de ~48px;
+- Em laudos e notas, ✎ e 🗑 saem da linha (a tela da máscara já os traz) e a
+  ☆ fica; categorias mantêm os dois.
+- **Mover itens** fica oculto: o arrastar-e-soltar depende de eventos de
+  mouse e não funciona no toque.
+
 ## Modelo de dados (Firestore)
 
 Coleção única `nodes`. Cada documento é uma **categoria**, um **laudo** ou uma
