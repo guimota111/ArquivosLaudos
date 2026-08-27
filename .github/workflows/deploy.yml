@@ -1,10 +1,14 @@
-# Deploy automático para o Firebase Hosting.
-# Publica o site a cada push na branch principal (main/master) e também
-# pode ser disparado manualmente na aba "Actions" do GitHub.
+# Deploy automático para o Firebase (site + regras do Firestore).
+# Publica a cada push na branch principal (main/master) e também pode ser
+# disparado manualmente na aba "Actions" do GitHub.
+#
+# As regras (`firestore.rules`) vão junto de propósito: quando só o site era
+# publicado, uma regra nova no repositório nunca chegava à produção e o
+# recurso correspondente falhava calado (foi o caso das favoritas).
 #
 # Pré-requisito (feito uma única vez): criar o secret FIREBASE_SERVICE_ACCOUNT
 # no repositório. Veja DEPLOY.md, seção "Deploy automático".
-name: Deploy no Firebase Hosting
+name: Deploy no Firebase
 
 on:
   push:
@@ -31,3 +35,16 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           channelId: live
           projectId: arquivolaudos
+
+      # A action acima só publica o Hosting; as regras vão neste passo.
+      - name: Publica as regras do Firestore
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/service-account.json"
+          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/service-account.json"
+          npx --yes firebase-tools@13 deploy \
+            --only firestore:rules \
+            --project arquivolaudos \
+            --non-interactive
+          rm -f "$RUNNER_TEMP/service-account.json"

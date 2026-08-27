@@ -98,7 +98,10 @@ firebase deploy --only firestore:rules   # publica as regras de segurança
 firebase deploy --only hosting           # publica o site
 ```
 
-> **Segurança:** as regras em `firestore.rules` estão **abertas** (qualquer um
-> lê/escreve), conforme a opção "sem login". Se um dia quiser restringir,
-> habilite o Firebase Authentication e troque `allow read, write: if true;`
-> por `if request.auth != null;`.
+> **As regras do repositório são a fonte da verdade.** Sempre que
+> `firestore.rules` mudar, publique (`npm run deploy:rules`, ou o deploy
+> automático do GitHub Actions, que já cuida disso). Editar as regras direto
+> no Console do Firebase faz produção e repositório divergirem — a seção
+> **Favoritas** ficou fora do ar exatamente assim: o bloco
+> `match /favorites/{userId}` existia no arquivo, mas nunca chegou à
+> produção.

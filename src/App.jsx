@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
@@ -106,6 +106,29 @@ function snippet(content, q) {
   return (start > 0 ? '…' : '') + c.slice(start, end) + (end < c.length ? '…' : '')
 }
 
+// Favoritas guardadas neste navegador. Servem de cache imediato e de reserva
+// caso o Firestore recuse a coleção `favorites` (regras ainda não publicadas).
+const favKey = (uid) => `favoritas:${uid}`
+
+function readLocalFavs(uid) {
+  if (!uid) return []
+  try {
+    const arr = JSON.parse(localStorage.getItem(favKey(uid)) || '[]')
+    return Array.isArray(arr) ? arr : []
+  } catch {
+    return []
+  }
+}
+
+function writeLocalFavs(uid, ids) {
+  if (!uid) return
+  try {
+    localStorage.setItem(favKey(uid), JSON.stringify(ids))
+  } catch {
+    /* navegador sem armazenamento: as favoritas seguem só em memória */
+  }
+}
+
 export default function App() {
   const [user, setUser] = useState(undefined) // undefined = carregando
   // Nome do usuário mantido em estado próprio: logo após o cadastro o
@@ -150,6 +173,8 @@ function authErrorMessage(code, isSignup) {
       return 'Cadastro por e-mail/senha não está habilitado no Firebase.'
     case 'auth/too-many-requests':
       return 'Muitas tentativas. Tente novamente mais tarde.'
+    case 'auth/network-request-failed':
+      return 'Sem conexão com o servidor. Verifique sua internet.'
     default:
       return isSignup
         ? 'Não foi possível criar a conta. Tente novamente.'
@@ -379,7 +404,14 @@ function MenuApp({ user, displayName, onNameChange }) {
   const [editMode, setEditMode] = useState(false)
   const [dragId, setDragId] = useState(null) // item sendo arrastado
   const [dropId, setDropId] = useState(null) // categoria destino sob o cursor
-  const [favIds, setFavIds] = useState([]) // ids favoritados por este usuário
+  // Favoritas deste usuário. Começam pelo cache local para a lista aparecer
+  // já no primeiro quadro; o Firestore assume assim que responder.
+  const [favIds, setFavIds] = useState(() => readLocalFavs(user?.uid))
+  // Ligado quando o Firestore nega a coleção `favorites`: a partir daí as
+  // favoritas valem só neste navegador e um aviso explica o porquê.
+  const [favLocalOnly, setFavLocalOnly] = useState(false)
+  const favLocalOnlyRef = useRef(false)
+  const [loadError, setLoadError] = useState('')
 
   // Cria as categorias iniciais na primeira abertura.
   useEffect(() => {
@@ -388,17 +420,45 @@ function MenuApp({ user, displayName, onNameChange }) {
 
   // Assina todos os nós em tempo real.
   useEffect(() => {
-    const unsub = subscribeAll((items) => {
-      setNodes(items)
-      setLoading(false)
-    })
-    return unsub
+    return subscribeAll(
+      (items) => {
+        setNodes(items)
+        setLoading(false)
+        setLoadError('')
+      },
+      (err) => {
+        console.error('Falha ao ler os laudos:', err)
+        setLoading(false)
+        setLoadError(
+          err?.code === 'permission-denied'
+            ? 'Sem permissão para ler o acervo. Publique as regras do Firestore (npm run deploy:rules).'
+            : 'Não foi possível carregar o acervo. Verifique sua conexão.',
+        )
+      },
+    )
   }, [])
 
   // Assina as favoritas deste usuário.
   useEffect(() => {
-    if (!user?.uid) return
-    return subscribeFavorites(user.uid, setFavIds)
+    const uid = user?.uid
+    if (!uid) return
+    favLocalOnlyRef.current = false
+    setFavLocalOnly(false)
+    setFavIds(readLocalFavs(uid))
+    return subscribeFavorites(
+      uid,
+      (ids) => {
+        // Em modo local o servidor não manda mais no que está favoritado.
+        if (favLocalOnlyRef.current) return
+        setFavIds(ids)
+        writeLocalFavs(uid, ids)
+      },
+      (err) => {
+        console.error('Falha ao ler as favoritas:', err)
+        favLocalOnlyRef.current = true
+        setFavLocalOnly(true)
+      },
+    )
   }, [user?.uid])
 
   // Índice por id e mapa pai -> filhos (ordenados: categorias antes de laudos).
@@ -438,7 +498,22 @@ function MenuApp({ user, displayName, onNameChange }) {
     [favIds, nodeById],
   )
   const toggleFav = (id) => {
-    if (user?.uid) setFavorite(user.uid, id, !favSet.has(id))
+    const uid = user?.uid
+    if (!uid) return
+    const isFav = !favSet.has(id)
+    const next = isFav ? [...favIds, id] : favIds.filter((x) => x !== id)
+    // Responde na hora; o Firestore confirma (ou não) logo em seguida.
+    setFavIds(next)
+    writeLocalFavs(uid, next)
+    if (favLocalOnlyRef.current) return
+    setFavorite(uid, id, isFav).catch((err) => {
+      console.error('Falha ao salvar a favorita:', err)
+      favLocalOnlyRef.current = true
+      setFavLocalOnly(true)
+      // O Firestore desfaz a escrita recusada; reafirma a escolha do usuário.
+      setFavIds(next)
+      writeLocalFavs(uid, next)
+    })
   }
   const addTargetLabel = selectedNode ? selectedNode.label : rootLabelOf(selectedId)
 
@@ -775,6 +850,8 @@ function MenuApp({ user, displayName, onNameChange }) {
         <div className="menu-scroll">
           {loading ? (
             <p className="menu-status">Carregando…</p>
+          ) : loadError ? (
+            <p className="menu-status error">⚠️ {loadError}</p>
           ) : results ? (
             <SearchResults
               results={results}
@@ -812,6 +889,14 @@ function MenuApp({ user, displayName, onNameChange }) {
                     )}
                   </span>
                 </div>
+                {expanded.has('favorites') && favLocalOnly && (
+                  <p className="fav-warn">
+                    ⚠️ Sem permissão para salvar as favoritas na nuvem — por
+                    ora elas valem só neste navegador. Publique as regras do
+                    Firestore (<code>npm run deploy:rules</code>) para
+                    sincronizá-las entre dispositivos.
+                  </p>
+                )}
                 {expanded.has('favorites') &&
                   (favNodes.length === 0 ? (
                     <p className="fav-empty">
