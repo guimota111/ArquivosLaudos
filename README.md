@@ -29,19 +29,29 @@ exige **login por e-mail e senha**.
 
 ## Autenticação (obrigatória)
 
-O app agora abre numa **tela de login**. Para funcionar:
+O app abre numa **tela de autenticação** com duas abas:
+
+- **Entrar** — e-mail e senha.
+- **Criar conta** — nome, e-mail e senha (mínimo de 6 caracteres, com
+  confirmação). O **nome** informado é o que credita as contribuições
+  ("adicionado por …") nas máscaras criadas pela pessoa.
+
+Para funcionar:
 
 1. No [console do Firebase](https://console.firebase.google.com/) →
    **Authentication** → **Sign-in method**, habilite o provedor
    **E-mail/senha**.
-2. Em **Authentication → Users**, clique em **Add user** e cadastre o
-   e-mail/senha de cada pessoa que terá acesso (não há cadastro público — o
-   acesso é controlado por você).
-3. Publique as regras do Firestore (já exigem login):
+2. Publique as regras do Firestore (já exigem login):
    `firebase deploy --only firestore:rules`.
 
-> Não há tela de cadastro no app, de propósito: o acesso é fechado, pensado
-> para ser cobrado no futuro. Você cria/remove usuários pelo console.
+> **Atenção:** com o cadastro aberto no app, qualquer pessoa com o endereço do
+> site pode criar uma conta e passar a ler/escrever no acervo compartilhado.
+> Para voltar ao acesso fechado, desabilite o provedor E-mail/senha (ou
+> restrinja o cadastro) e crie os usuários em **Authentication → Users**.
+
+O nome pode ser alterado depois: clique no seu nome no canto superior direito
+do app. Contas antigas (criadas pelo console, sem nome) aparecem como
+**"Definir meu nome"** até que um nome seja informado.
 
 ## Modelo de dados (Firestore)
 
