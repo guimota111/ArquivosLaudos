@@ -69,6 +69,11 @@ manualmente em **Actions → Deploy no Firebase** → **Run workflow**), o site
 > serviço precisa poder publicar regras (a chave gerada em **Configurações do
 > projeto → Contas de serviço** já tem essa permissão).
 
+> **Sem o secret, o workflow não publica nada** — ele roda o build (que serve
+> de verificação) e pula os passos de deploy com um aviso na aba Actions, em
+> vez de falhar a cada push. Enquanto o secret não existir, publique pela
+> Opção A (`npm run deploy`).
+
 ---
 
 ## Primeira publicação das regras do Firestore
