@@ -101,6 +101,51 @@ body {
   font-size: 15px;
   margin-top: 4px;
 }
+.auth-tabs {
+  display: flex;
+  gap: 4px;
+  margin: 18px 0 0;
+  padding: 4px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+.auth-tab {
+  flex: 1;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.auth-tab:hover {
+  color: var(--text);
+}
+.auth-tab.active {
+  background: var(--accent-2);
+  color: #12082b;
+  font-weight: 600;
+}
+.auth-switch {
+  margin: 12px 0 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+.link-btn {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--accent);
+  font-size: inherit;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+}
 
 /* ---------- Layout do mapa ---------- */
 .map-wrap {
@@ -167,13 +212,22 @@ body {
   align-items: center;
   gap: 8px;
 }
-.user-email {
-  color: var(--muted);
-  font-size: 12px;
+.user-name {
   max-width: 180px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+.user-name:hover {
+  color: var(--text);
+  text-decoration: underline;
 }
 .logout-btn {
   padding: 6px 12px;
@@ -776,17 +830,17 @@ body {
 }
 
 /* Em telas estreitas, empilha árvore e painel. */
-@media (max-width: 720px) {
-  .menu-body {
-    flex-direction: column;
-  }
-  .menu-scroll {
-    flex: 0 0 auto;
-    max-height: 45%;
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-  }
+/* No desktop o grupo não existe visualmente: os filhos seguem participando
+   do flex do cabeçalho como antes. No celular ele vira a barra fixa de baixo. */
+.menubar-actions {
+  display: contents;
 }
+
+/* Voltar da máscara para a lista — só aparece no celular. */
+.mask-back {
+  display: none;
+}
+
 
 .menu-status {
   color: var(--muted);
@@ -1135,4 +1189,227 @@ body {
 }
 .react-flow__controls button:hover {
   background: #16223d;
+}
+
+/* Aviso de favoritas em modo local (regras do Firestore não publicadas). */
+.fav-warn {
+  margin: 0 12px 6px 40px;
+  padding: 8px 10px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--note);
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  border-radius: 8px;
+}
+.fav-warn code {
+  font-size: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1px 5px;
+  border-radius: 5px;
+}
+.menu-status.error {
+  color: var(--danger);
+  line-height: 1.5;
+}
+
+/* =====================================================================
+   CELULAR — uma tela por vez
+   Cabeçalho enxuto em cima, lista ocupando a tela toda, ações fixas
+   embaixo ao alcance do polegar, e a máscara abrindo em tela cheia.
+   ===================================================================== */
+@media (max-width: 720px) {
+  .menu-app {
+    height: 100dvh;
+  }
+
+  /* ---- Cabeçalho: título + usuário numa linha, busca na outra ---- */
+  .menubar {
+    gap: 10px;
+    row-gap: 10px;
+    padding: 10px 12px;
+  }
+  .app-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .user-box {
+    flex: 0 0 auto;
+  }
+  .user-name {
+    max-width: 90px;
+  }
+  .search-box {
+    order: 3;
+    flex: 1 0 100%;
+    max-width: none;
+    padding: 8px 14px;
+  }
+  /* 16px evita o zoom automático do iOS ao focar um campo. */
+  .search-input,
+  .field,
+  .tag-input {
+    font-size: 16px;
+  }
+
+  /* ---- Ações principais: barra fixa no rodapé ---- */
+  .menubar-actions {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-soft);
+    border-top: 1px solid var(--border);
+    padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+    box-shadow: 0 -12px 30px rgba(0, 0, 0, 0.45);
+  }
+  .menubar .add-target {
+    margin: 0 0 8px;
+    justify-content: center;
+    border: none;
+    background: none;
+    padding: 0;
+    font-size: 12.5px;
+  }
+  .toolbar {
+    gap: 8px;
+  }
+  .toolbar .btn {
+    flex: 1;
+    min-height: 48px;
+    padding: 12px 6px;
+  }
+  /* Arrastar-e-soltar não existe no toque: esconde a isca. */
+  .btn-move {
+    display: none;
+  }
+
+  /* ---- A lista ocupa a tela inteira ---- */
+  .menu-body {
+    flex-direction: column;
+  }
+  .menu-scroll {
+    flex: 1 1 auto;
+    max-height: none;
+    border-right: none;
+    padding: 10px 6px calc(124px + env(safe-area-inset-bottom));
+  }
+
+  /* ---- Alvos de toque (mínimo confortável: ~44px) ---- */
+  .menu-row {
+    min-height: 52px;
+    gap: 2px;
+  }
+  .menu-main {
+    font-size: 16px;
+    padding: 10px 8px;
+  }
+  .twist {
+    width: 40px;
+    height: 40px;
+    font-size: 15px;
+  }
+  .menu-actions button {
+    min-width: 42px;
+    padding: 10px 8px;
+    font-size: 16px;
+  }
+  .fav-empty,
+  .fav-warn {
+    margin-left: 12px;
+    margin-right: 12px;
+    padding-left: 10px;
+  }
+  /* Em laudos e notas, ✎ e 🗑 saem da linha: a tela da máscara já traz
+     Editar e Excluir, e assim sobra largura para o nome. A ☆ fica, que é
+     o gesto rápido. Categorias mantêm os dois — não têm outra porta. */
+  .menu-row.laudo .menu-actions button:not(.fav-btn),
+  .menu-row.nota .menu-actions button:not(.fav-btn) {
+    display: none;
+  }
+
+  /* ---- Máscara: tela cheia por cima da lista ---- */
+  .mask-panel.empty {
+    display: none;
+  }
+  .mask-panel {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    background: var(--bg);
+    padding: 10px 14px calc(16px + env(safe-area-inset-bottom));
+    gap: 14px;
+  }
+  .mask-back {
+    display: block;
+    align-self: flex-start;
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 8px 8px 8px 0;
+    cursor: pointer;
+  }
+  .mask-title {
+    font-size: 19px;
+  }
+  .copy-btn {
+    width: 100%;
+    min-height: 50px;
+  }
+  .mask-content {
+    padding: 14px;
+    font-size: 14px;
+  }
+  .mask-actions .btn {
+    flex: 1 1 42%;
+    min-height: 48px;
+  }
+
+  /* ---- Modais como folha subindo de baixo ---- */
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .modal {
+    max-width: none;
+    max-height: 92dvh;
+    display: flex;
+    flex-direction: column;
+    border-radius: 18px 18px 0 0;
+  }
+  .modal-body {
+    overflow: auto;
+    padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+  }
+  .modal-actions .btn {
+    flex: 1;
+    min-height: 48px;
+  }
+  .textarea {
+    min-height: 180px;
+  }
+  .icon-option {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* ---- Tela de entrar/criar conta ---- */
+  .login-card {
+    max-width: none;
+    padding: 24px 20px;
+  }
+  .login-btn,
+  .auth-tab {
+    min-height: 48px;
+  }
 }

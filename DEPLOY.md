@@ -31,8 +31,8 @@ npm install
 **4. Publique:**
 
 ```bash
-npm run deploy          # faz o build e publica o site (hosting)
-npm run deploy:rules    # publica as regras do Firestore
+npm run deploy          # build + publica o site E as regras do Firestore
+npm run deploy:rules    # publica só as regras do Firestore
 ```
 
 Ao final, o CLI mostra a URL pública (algo como
@@ -62,12 +62,17 @@ branch principal. Configure o acesso **uma única vez**:
   - Valor: cole **todo o conteúdo** do arquivo `.json` baixado.
 
 **3. Pronto.** No próximo push para `main`/`master` (ou rodando o workflow
-manualmente em **Actions → Deploy no Firebase Hosting → Run workflow**), o
-site é publicado automaticamente.
+manualmente em **Actions → Deploy no Firebase** → **Run workflow**), o site
+**e as regras do Firestore** são publicados automaticamente.
 
-> As **regras do Firestore** (`firestore.rules`) não são publicadas por esse
-> workflow — publique-as uma vez pela Opção A (`npm run deploy:rules`) ou pelo
-> Console do Firebase. Elas mudam raramente.
+> O passo das regras usa o mesmo secret `FIREBASE_SERVICE_ACCOUNT`. A conta de
+> serviço precisa poder publicar regras (a chave gerada em **Configurações do
+> projeto → Contas de serviço** já tem essa permissão).
+
+> **Sem o secret, o workflow não publica nada** — ele roda o build (que serve
+> de verificação) e pula os passos de deploy com um aviso na aba Actions, em
+> vez de falhar a cada push. Enquanto o secret não existir, publique pela
+> Opção A (`npm run deploy`).
 
 ---
 
@@ -83,5 +88,7 @@ firebase deploy --only firestore:rules
 Ou cole o conteúdo de `firestore.rules` no Console do Firebase →
 **Firestore Database** → aba **Regras** → **Publicar**.
 
-> Lembrete de segurança: as regras estão **abertas** (sem login), conforme a
-> opção escolhida. Qualquer pessoa com o link pode ler/editar os laudos.
+> **Publique as regras sempre que `firestore.rules` mudar.** Editar as regras
+> só pelo Console do Firebase faz o arquivo do repositório e a produção
+> divergirem — foi assim que a coleção `favorites` ficou sem permissão e a
+> seção **Favoritas** parou de funcionar sem dar erro na tela.

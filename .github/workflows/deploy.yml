@@ -1,10 +1,16 @@
-# Deploy automático para o Firebase Hosting.
-# Publica o site a cada push na branch principal (main/master) e também
-# pode ser disparado manualmente na aba "Actions" do GitHub.
+# Deploy automático para o Firebase (site + regras do Firestore).
+# Publica a cada push na branch principal (main/master) e também pode ser
+# disparado manualmente na aba "Actions" do GitHub.
 #
-# Pré-requisito (feito uma única vez): criar o secret FIREBASE_SERVICE_ACCOUNT
-# no repositório. Veja DEPLOY.md, seção "Deploy automático".
-name: Deploy no Firebase Hosting
+# As regras (`firestore.rules`) vão junto de propósito: quando só o site era
+# publicado, uma regra nova no repositório nunca chegava à produção e o
+# recurso correspondente falhava calado (foi o caso das favoritas).
+#
+# Sem o secret FIREBASE_SERVICE_ACCOUNT o build ainda roda (serve de CI), mas
+# os passos de publicação são pulados com um aviso — em vez de derrubar todo
+# push. Para publicar de fato, configure o secret (veja DEPLOY.md, Opção B) ou
+# rode `npm run deploy` na sua máquina.
+name: Deploy no Firebase
 
 on:
   push:
@@ -14,6 +20,8 @@ on:
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
+    env:
+      FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
     steps:
       - uses: actions/checkout@v4
 
@@ -25,9 +33,44 @@ jobs:
       - run: npm ci
       - run: npm run build
 
-      - uses: FirebaseExtended/action-hosting-deploy@v0
+      # O contexto `secrets` não existe no `if` de um passo; por isso a
+      # verificação vira uma saída deste passo.
+      - name: Verifica as credenciais do Firebase
+        id: cred
+        run: |
+          if [ -n "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo 'ok=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'ok=false' >> "$GITHUB_OUTPUT"
+            echo "::warning::Secret FIREBASE_SERVICE_ACCOUNT ausente — nada foi publicado (nem o site, nem as regras)."
+            {
+              echo '### ⚠️ Nada foi publicado'
+              echo
+              echo 'O secret `FIREBASE_SERVICE_ACCOUNT` não está configurado, então os'
+              echo 'passos de deploy foram pulados. O build passou.'
+              echo
+              echo 'Para publicar: configure o secret (DEPLOY.md, Opção B) ou rode'
+              echo '`npm run deploy` na sua máquina.'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Publica o site (Hosting)
+        if: steps.cred.outputs.ok == 'true'
+        uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           channelId: live
           projectId: arquivolaudos
+
+      # A action acima só publica o Hosting; as regras vão neste passo.
+      - name: Publica as regras do Firestore
+        if: steps.cred.outputs.ok == 'true'
+        run: |
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/service-account.json"
+          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/service-account.json"
+          npx --yes firebase-tools@13 deploy \
+            --only firestore:rules \
+            --project arquivolaudos \
+            --non-interactive
+          rm -f "$RUNNER_TEMP/service-account.json"

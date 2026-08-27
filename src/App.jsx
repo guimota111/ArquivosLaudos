@@ -1,8 +1,10 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
+  createUserWithEmailAndPassword,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
+  updateProfile,
 } from 'firebase/auth'
 
 import { auth } from './firebase'
@@ -104,11 +106,59 @@ function snippet(content, q) {
   return (start > 0 ? '…' : '') + c.slice(start, end) + (end < c.length ? '…' : '')
 }
 
+// Favoritas guardadas neste navegador. Servem de cache imediato e de reserva
+// caso o Firestore recuse a coleção `favorites` (regras ainda não publicadas).
+const favKey = (uid) => `favoritas:${uid}`
+
+function readLocalFavs(uid) {
+  if (!uid) return []
+  try {
+    const arr = JSON.parse(localStorage.getItem(favKey(uid)) || '[]')
+    return Array.isArray(arr) ? arr : []
+  } catch {
+    return []
+  }
+}
+
+function writeLocalFavs(uid, ids) {
+  if (!uid) return
+  try {
+    localStorage.setItem(favKey(uid), JSON.stringify(ids))
+  } catch {
+    /* navegador sem armazenamento: as favoritas seguem só em memória */
+  }
+}
+
+// Layout de celular. O CSS cuida da aparência; este hook existe para o que
+// depende de comportamento — num toque só, abrir a pasta além de selecioná-la.
+const MOBILE_QUERY = '(max-width: 720px)'
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(
+    () => window.matchMedia?.(MOBILE_QUERY).matches ?? false,
+  )
+  useEffect(() => {
+    const mq = window.matchMedia?.(MOBILE_QUERY)
+    if (!mq) return
+    const onChange = (e) => setIsMobile(e.matches)
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [])
+  return isMobile
+}
+
 export default function App() {
   const [user, setUser] = useState(undefined) // undefined = carregando
+  // Nome do usuário mantido em estado próprio: logo após o cadastro o
+  // `updateProfile` ainda não refletiu no objeto entregue pelo listener.
+  const [name, setName] = useState('')
 
   useEffect(() => {
-    return onAuthStateChanged(auth, (u) => setUser(u || null))
+    return onAuthStateChanged(auth, (u) => {
+      setUser(u || null)
+      // Ao sair, limpa; enquanto logado, preserva o nome já conhecido.
+      setName((prev) => u?.displayName || (u ? prev : ''))
+    })
   }, [])
 
   if (user === undefined) {
@@ -119,42 +169,90 @@ export default function App() {
     )
   }
   if (!user) {
-    return <Login />
+    return <AuthScreen onNameSet={setName} />
   }
-  return <MenuApp user={user} />
+  return <MenuApp user={user} displayName={name} onNameChange={setName} />
 }
 
-// Tela inicial: login por e-mail e senha.
-function Login() {
+// Traduz os códigos de erro do Firebase Auth para mensagens em português.
+function authErrorMessage(code, isSignup) {
+  switch (code) {
+    case 'auth/invalid-credential':
+    case 'auth/wrong-password':
+    case 'auth/user-not-found':
+      return 'E-mail ou senha incorretos.'
+    case 'auth/invalid-email':
+      return 'E-mail inválido.'
+    case 'auth/email-already-in-use':
+      return 'Já existe uma conta com este e-mail. Use "Entrar".'
+    case 'auth/weak-password':
+      return 'A senha precisa ter pelo menos 6 caracteres.'
+    case 'auth/operation-not-allowed':
+      return 'Cadastro por e-mail/senha não está habilitado no Firebase.'
+    case 'auth/too-many-requests':
+      return 'Muitas tentativas. Tente novamente mais tarde.'
+    case 'auth/network-request-failed':
+      return 'Sem conexão com o servidor. Verifique sua internet.'
+    default:
+      return isSignup
+        ? 'Não foi possível criar a conta. Tente novamente.'
+        : 'Não foi possível entrar. Tente novamente.'
+  }
+}
+
+// Tela inicial: entrar com e-mail/senha ou criar uma conta (nome + e-mail +
+// senha). O nome informado no cadastro é o que identifica as contribuições.
+function AuthScreen({ onNameSet }) {
+  const [mode, setMode] = useState('login') // 'login' | 'signup'
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirm, setConfirm] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
 
+  const isSignup = mode === 'signup'
+  const canSubmit =
+    !!email.trim() && !!password && (!isSignup || (!!name.trim() && !!confirm))
+
+  const switchMode = (next) => {
+    if (next === mode) return
+    setMode(next)
+    setError('')
+    setPassword('')
+    setConfirm('')
+  }
+
   const submit = async (e) => {
     e.preventDefault()
-    if (!email.trim() || !password) return
+    if (!canSubmit || busy) return
+    if (isSignup && password.length < 6) {
+      setError('A senha precisa ter pelo menos 6 caracteres.')
+      return
+    }
+    if (isSignup && password !== confirm) {
+      setError('As senhas não conferem.')
+      return
+    }
     setBusy(true)
     setError('')
     try {
-      await signInWithEmailAndPassword(auth, email.trim(), password)
+      if (isSignup) {
+        const nome = name.trim()
+        const cred = await createUserWithEmailAndPassword(
+          auth,
+          email.trim(),
+          password,
+        )
+        await updateProfile(cred.user, { displayName: nome })
+        onNameSet(nome)
+      } else {
+        await signInWithEmailAndPassword(auth, email.trim(), password)
+      }
       // onAuthStateChanged assume daqui e troca de tela.
     } catch (err) {
       console.error(err)
-      const code = err?.code || ''
-      if (
-        code === 'auth/invalid-credential' ||
-        code === 'auth/wrong-password' ||
-        code === 'auth/user-not-found'
-      ) {
-        setError('E-mail ou senha incorretos.')
-      } else if (code === 'auth/invalid-email') {
-        setError('E-mail inválido.')
-      } else if (code === 'auth/too-many-requests') {
-        setError('Muitas tentativas. Tente novamente mais tarde.')
-      } else {
-        setError('Não foi possível entrar. Tente novamente.')
-      }
+      setError(authErrorMessage(err?.code, isSignup))
       setBusy(false)
     }
   }
@@ -163,7 +261,38 @@ function Login() {
     <div className="landing">
       <form className="login-card" onSubmit={submit}>
         <h1 className="login-title">🗂️ Arquivo de Laudos</h1>
-        <p className="login-sub">Entre com seu e-mail e senha</p>
+        <div className="auth-tabs">
+          <button
+            type="button"
+            className={`auth-tab ${!isSignup ? 'active' : ''}`}
+            onClick={() => switchMode('login')}
+          >
+            Entrar
+          </button>
+          <button
+            type="button"
+            className={`auth-tab ${isSignup ? 'active' : ''}`}
+            onClick={() => switchMode('signup')}
+          >
+            Criar conta
+          </button>
+        </div>
+        <p className="login-sub">
+          {isSignup
+            ? 'Seu nome aparece nas máscaras que você adicionar'
+            : 'Entre com seu e-mail e senha'}
+        </p>
+        {isSignup && (
+          <input
+            className="field"
+            type="text"
+            autoComplete="name"
+            placeholder="Seu nome"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            autoFocus
+          />
+        )}
         <input
           className="field"
           type="email"
@@ -171,32 +300,115 @@ function Login() {
           placeholder="E-mail"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          autoFocus
+          autoFocus={!isSignup}
         />
         <input
           className="field"
           type="password"
-          autoComplete="current-password"
-          placeholder="Senha"
+          autoComplete={isSignup ? 'new-password' : 'current-password'}
+          placeholder={isSignup ? 'Senha (mínimo 6 caracteres)' : 'Senha'}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+        {isSignup && (
+          <input
+            className="field"
+            type="password"
+            autoComplete="new-password"
+            placeholder="Repita a senha"
+            value={confirm}
+            onChange={(e) => setConfirm(e.target.value)}
+          />
+        )}
         {error && <p className="login-error">{error}</p>}
         <button
           className="btn primary login-btn"
           type="submit"
-          disabled={busy || !email.trim() || !password}
+          disabled={busy || !canSubmit}
         >
-          {busy ? 'Entrando…' : 'Entrar'}
+          {busy
+            ? isSignup
+              ? 'Criando…'
+              : 'Entrando…'
+            : isSignup
+              ? 'Criar conta'
+              : 'Entrar'}
         </button>
+        <p className="auth-switch">
+          {isSignup ? 'Já tem uma conta?' : 'Ainda não tem conta?'}{' '}
+          <button
+            type="button"
+            className="link-btn"
+            onClick={() => switchMode(isSignup ? 'login' : 'signup')}
+          >
+            {isSignup ? 'Entrar' : 'Criar conta'}
+          </button>
+        </p>
       </form>
     </div>
   )
 }
 
-function MenuApp({ user }) {
+// Modal para definir/alterar o nome exibido nas contribuições.
+function ProfileModal({ currentName, email, onSaved, onClose }) {
+  const [name, setName] = useState(currentName || '')
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+
+  const save = async () => {
+    const nome = name.trim()
+    if (!nome || busy) return
+    setBusy(true)
+    setError('')
+    try {
+      await updateProfile(auth.currentUser, { displayName: nome })
+      onSaved(nome)
+      onClose()
+    } catch (e) {
+      console.error(e)
+      setError('Não foi possível salvar o nome. Tente novamente.')
+      setBusy(false)
+    }
+  }
+
+  return (
+    <Modal title="Seu nome" onClose={onClose}>
+      <p className="target-note">
+        É o nome que aparece nas máscaras que você adiciona (<b>{email}</b>).
+      </p>
+      <input
+        className="field"
+        autoFocus
+        placeholder="Nome"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        onKeyDown={(e) => e.key === 'Enter' && save()}
+      />
+      {error && <p className="login-error">{error}</p>}
+      <div className="modal-actions">
+        <button className="btn ghost" onClick={onClose}>
+          Cancelar
+        </button>
+        <button
+          className="btn primary"
+          disabled={!name.trim() || busy}
+          onClick={save}
+        >
+          Salvar
+        </button>
+      </div>
+    </Modal>
+  )
+}
+
+function MenuApp({ user, displayName, onNameChange }) {
+  const isMobile = useIsMobile()
   const [nodes, setNodes] = useState([])
   const [loading, setLoading] = useState(true)
+  const [profileOpen, setProfileOpen] = useState(false)
+  // Nome usado para creditar as contribuições (cai no e-mail se ainda não
+  // houver nome definido — contas antigas, criadas pelo console).
+  const authorName = displayName || user?.email || ''
   // Categorias abertas (submenus expandidos). Os dois arquivos começam abertos.
   const [expanded, setExpanded] = useState(
     () => new Set([...ROOT_IDS, 'favorites']),
@@ -211,7 +423,14 @@ function MenuApp({ user }) {
   const [editMode, setEditMode] = useState(false)
   const [dragId, setDragId] = useState(null) // item sendo arrastado
   const [dropId, setDropId] = useState(null) // categoria destino sob o cursor
-  const [favIds, setFavIds] = useState([]) // ids favoritados por este usuário
+  // Favoritas deste usuário. Começam pelo cache local para a lista aparecer
+  // já no primeiro quadro; o Firestore assume assim que responder.
+  const [favIds, setFavIds] = useState(() => readLocalFavs(user?.uid))
+  // Ligado quando o Firestore nega a coleção `favorites`: a partir daí as
+  // favoritas valem só neste navegador e um aviso explica o porquê.
+  const [favLocalOnly, setFavLocalOnly] = useState(false)
+  const favLocalOnlyRef = useRef(false)
+  const [loadError, setLoadError] = useState('')
 
   // Cria as categorias iniciais na primeira abertura.
   useEffect(() => {
@@ -220,17 +439,45 @@ function MenuApp({ user }) {
 
   // Assina todos os nós em tempo real.
   useEffect(() => {
-    const unsub = subscribeAll((items) => {
-      setNodes(items)
-      setLoading(false)
-    })
-    return unsub
+    return subscribeAll(
+      (items) => {
+        setNodes(items)
+        setLoading(false)
+        setLoadError('')
+      },
+      (err) => {
+        console.error('Falha ao ler os laudos:', err)
+        setLoading(false)
+        setLoadError(
+          err?.code === 'permission-denied'
+            ? 'Sem permissão para ler o acervo. Publique as regras do Firestore (npm run deploy:rules).'
+            : 'Não foi possível carregar o acervo. Verifique sua conexão.',
+        )
+      },
+    )
   }, [])
 
   // Assina as favoritas deste usuário.
   useEffect(() => {
-    if (!user?.uid) return
-    return subscribeFavorites(user.uid, setFavIds)
+    const uid = user?.uid
+    if (!uid) return
+    favLocalOnlyRef.current = false
+    setFavLocalOnly(false)
+    setFavIds(readLocalFavs(uid))
+    return subscribeFavorites(
+      uid,
+      (ids) => {
+        // Em modo local o servidor não manda mais no que está favoritado.
+        if (favLocalOnlyRef.current) return
+        setFavIds(ids)
+        writeLocalFavs(uid, ids)
+      },
+      (err) => {
+        console.error('Falha ao ler as favoritas:', err)
+        favLocalOnlyRef.current = true
+        setFavLocalOnly(true)
+      },
+    )
   }, [user?.uid])
 
   // Índice por id e mapa pai -> filhos (ordenados: categorias antes de laudos).
@@ -270,7 +517,22 @@ function MenuApp({ user }) {
     [favIds, nodeById],
   )
   const toggleFav = (id) => {
-    if (user?.uid) setFavorite(user.uid, id, !favSet.has(id))
+    const uid = user?.uid
+    if (!uid) return
+    const isFav = !favSet.has(id)
+    const next = isFav ? [...favIds, id] : favIds.filter((x) => x !== id)
+    // Responde na hora; o Firestore confirma (ou não) logo em seguida.
+    setFavIds(next)
+    writeLocalFavs(uid, next)
+    if (favLocalOnlyRef.current) return
+    setFavorite(uid, id, isFav).catch((err) => {
+      console.error('Falha ao salvar a favorita:', err)
+      favLocalOnlyRef.current = true
+      setFavLocalOnly(true)
+      // O Firestore desfaz a escrita recusada; reafirma a escolha do usuário.
+      setFavIds(next)
+      writeLocalFavs(uid, next)
+    })
   }
   const addTargetLabel = selectedNode ? selectedNode.label : rootLabelOf(selectedId)
 
@@ -411,7 +673,13 @@ function MenuApp({ user }) {
   const renderRows = (parentId, depth) => {
     const kids = childrenOf.get(parentId) || []
     return kids.map((node) => {
-      const indent = { paddingLeft: 12 + depth * 20 }
+      // No celular o recuo é menor e trava depois de alguns níveis: sem
+      // isso, uma hierarquia funda não deixa largura para o nome do item.
+      const indent = {
+        paddingLeft: isMobile
+          ? 8 + Math.min(depth, 6) * 12
+          : 12 + depth * 20,
+      }
 
       if (node.type === 'category') {
         const isOpen = expanded.has(node.id)
@@ -437,9 +705,16 @@ function MenuApp({ user }) {
               </button>
               <button
                 className="menu-main"
-                onClick={() => setSelectedId(node.id)}
-                onDoubleClick={() => toggle(node.id)}
-                title="Clique para selecionar · duplo-clique para abrir"
+                onClick={() => {
+                  setSelectedId(node.id)
+                  if (isMobile) toggle(node.id)
+                }}
+                onDoubleClick={() => !isMobile && toggle(node.id)}
+                title={
+                  isMobile
+                    ? 'Toque para abrir'
+                    : 'Clique para selecionar · duplo-clique para abrir'
+                }
               >
                 <span className="menu-icon">{node.icon || '📁'}</span>
                 <span className="menu-label">{node.label}</span>
@@ -524,7 +799,9 @@ function MenuApp({ user }) {
           <span className="search-icon">🔎</span>
           <input
             className="search-input"
-            placeholder="Buscar categoria, título ou texto do laudo…"
+            placeholder={
+              isMobile ? 'Buscar…' : 'Buscar categoria, título ou texto do laudo…'
+            }
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -538,47 +815,55 @@ function MenuApp({ user }) {
             </button>
           )}
         </div>
-        <div className="add-target">
-          Adicionar em: <b>{addTargetLabel}</b>
-          {selectedNode && (
+        <div className="menubar-actions">
+          <div className="add-target">
+            Adicionar em: <b>{addTargetLabel}</b>
+            {selectedNode && (
+              <button
+                className="clear-select"
+                title="Voltar a adicionar no topo do arquivo"
+                onClick={() => setSelectedId(currentArchive)}
+              >
+                ✕
+              </button>
+            )}
+          </div>
+          <div className="toolbar">
             <button
-              className="clear-select"
-              title="Voltar a adicionar no topo do arquivo"
-              onClick={() => setSelectedId(currentArchive)}
+              className="btn btn-cat"
+              onClick={() => setModal({ kind: 'add-category' })}
             >
-              ✕
+              + {selectedNode ? 'Subcategoria' : 'Categoria'}
             </button>
-          )}
+            <button
+              className={`btn ${isNotas ? 'btn-nota' : 'btn-laudo'}`}
+              onClick={() =>
+                setModal({ kind: isNotas ? 'add-nota' : 'add-laudo' })
+              }
+            >
+              + {isNotas ? 'Nota' : 'Laudo'}
+            </button>
+            <button
+              className={`btn btn-move ${editMode ? 'primary' : ''}`}
+              onClick={() => {
+                setEditMode((m) => !m)
+                setDragId(null)
+                setDropId(null)
+              }}
+              title="Ativar/desativar mover itens arrastando"
+            >
+              {editMode ? '✓ Concluir' : '✏️ Mover itens'}
+            </button>
+          </div>
         </div>
-        <div className="toolbar">
+        <div className="user-box">
           <button
-            className="btn btn-cat"
-            onClick={() => setModal({ kind: 'add-category' })}
+            className="user-name"
+            onClick={() => setProfileOpen(true)}
+            title={`${user?.email || ''} — clique para alterar seu nome`}
           >
-            + {selectedNode ? 'Subcategoria' : 'Categoria'}
+            {displayName || 'Definir meu nome'}
           </button>
-          <button
-            className={`btn ${isNotas ? 'btn-nota' : 'btn-laudo'}`}
-            onClick={() =>
-              setModal({ kind: isNotas ? 'add-nota' : 'add-laudo' })
-            }
-          >
-            + {isNotas ? 'Nota' : 'Laudo'}
-          </button>
-          <button
-            className={`btn ${editMode ? 'primary' : ''}`}
-            onClick={() => {
-              setEditMode((m) => !m)
-              setDragId(null)
-              setDropId(null)
-            }}
-            title="Ativar/desativar mover itens arrastando"
-          >
-            {editMode ? '✓ Concluir' : '✏️ Mover itens'}
-          </button>
-        </div>
-        <div className="user-box" title={user?.email || ''}>
-          <span className="user-email">{user?.email}</span>
           <button
             className="btn ghost logout-btn"
             onClick={() => signOut(auth)}
@@ -601,6 +886,8 @@ function MenuApp({ user }) {
         <div className="menu-scroll">
           {loading ? (
             <p className="menu-status">Carregando…</p>
+          ) : loadError ? (
+            <p className="menu-status error">⚠️ {loadError}</p>
           ) : results ? (
             <SearchResults
               results={results}
@@ -638,6 +925,14 @@ function MenuApp({ user }) {
                     )}
                   </span>
                 </div>
+                {expanded.has('favorites') && favLocalOnly && (
+                  <p className="fav-warn">
+                    ⚠️ Sem permissão para salvar as favoritas na nuvem — por
+                    ora elas valem só neste navegador. Publique as regras do
+                    Firestore (<code>npm run deploy:rules</code>) para
+                    sincronizá-las entre dispositivos.
+                  </p>
+                )}
                 {expanded.has('favorites') &&
                   (favNodes.length === 0 ? (
                     <p className="fav-empty">
@@ -704,8 +999,11 @@ function MenuApp({ user }) {
                       </button>
                       <button
                         className="menu-main"
-                        onClick={() => setSelectedId(root.id)}
-                        onDoubleClick={() => toggle(root.id)}
+                        onClick={() => {
+                          setSelectedId(root.id)
+                          if (isMobile) toggle(root.id)
+                        }}
+                        onDoubleClick={() => !isMobile && toggle(root.id)}
                         title={`Arquivo de ${root.label}`}
                       >
                         <span className="menu-icon">{root.icon}</span>
@@ -739,9 +1037,18 @@ function MenuApp({ user }) {
           modal={modal}
           parentId={selectedId}
           targetLabel={addTargetLabel}
-          authorEmail={user?.email || ''}
+          authorName={authorName}
           onAfterAdd={() => expand(selectedId)}
           onClose={() => setModal(null)}
+        />
+      )}
+
+      {profileOpen && (
+        <ProfileModal
+          currentName={displayName}
+          email={user?.email || ''}
+          onSaved={onNameChange}
+          onClose={() => setProfileOpen(false)}
         />
       )}
     </div>
@@ -819,8 +1126,7 @@ function MaskPanel({
     return (
       <div className="mask-panel empty">
         <p>
-          Selecione um <b>laudo</b> ou uma <b>nota</b> à esquerda para
-          visualizar a máscara aqui.
+          Selecione um <b>laudo</b> ou uma <b>nota</b> para ver a máscara.
         </p>
       </div>
     )
@@ -845,6 +1151,9 @@ function MaskPanel({
 
   return (
     <div className="mask-panel">
+      <button className="mask-back" onClick={onClose}>
+        ‹ Voltar
+      </button>
       <div className="mask-head">
         <div className="mask-titles">
           <span className="mask-path">{trail.join(' › ')}</span>
@@ -991,7 +1300,7 @@ function NodeModal({
   modal,
   parentId,
   targetLabel,
-  authorEmail,
+  authorName,
   onAfterAdd,
   onClose,
 }) {
@@ -1084,7 +1393,7 @@ function NodeModal({
                 type: 'category',
                 label,
                 icon,
-                createdBy: authorEmail,
+                createdBy: authorName,
               }),
         isRename ? undefined : onAfterAdd,
       )
@@ -1159,7 +1468,7 @@ function NodeModal({
                           label,
                           content,
                           tags,
-                          createdBy: authorEmail,
+                          createdBy: authorName,
                         })
                       : updateNode(node.id, {
                           label: label.trim(),
