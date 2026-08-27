@@ -49,10 +49,14 @@ const INITIAL_CATEGORIES = [
 // Observa em tempo real TODOS os nós (usado pelo menu em árvore, que monta
 // a hierarquia completa no cliente). O acervo é pequeno, então uma única
 // assinatura da coleção é suficiente.
-export function subscribeAll(cb) {
-  return onSnapshot(nodesCol, (snap) => {
-    cb(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
-  })
+export function subscribeAll(cb, onError) {
+  return onSnapshot(
+    nodesCol,
+    (snap) => {
+      cb(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+    },
+    (err) => onError?.(err),
+  )
 }
 
 // Observa em tempo real os filhos diretos de um nó pai.
@@ -99,10 +103,14 @@ export function incrementCopy(id) {
 // ----- Favoritas por usuário (coleção `favorites`, 1 doc por usuário) -----
 const favDoc = (userId) => doc(db, 'favorites', userId)
 
-export function subscribeFavorites(userId, cb) {
-  return onSnapshot(favDoc(userId), (snap) => {
-    cb(snap.exists() ? snap.data().nodeIds || [] : [])
-  })
+export function subscribeFavorites(userId, cb, onError) {
+  return onSnapshot(
+    favDoc(userId),
+    (snap) => {
+      cb(snap.exists() ? snap.data().nodeIds || [] : [])
+    },
+    (err) => onError?.(err),
+  )
 }
 
 export function setFavorite(userId, nodeId, isFav) {
