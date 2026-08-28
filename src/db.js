@@ -29,6 +29,7 @@ import {
   setDoc,
   arrayUnion,
   arrayRemove,
+  deleteField,
 } from 'firebase/firestore'
 
 // Dois arquivos separados (roots virtuais): laudos e notas.
@@ -101,22 +102,57 @@ export function incrementCopy(id) {
 }
 
 // ----- Favoritas por usuário (coleção `favorites`, 1 doc por usuário) -----
+//
+//   {
+//     nodeIds: string[],                   // tudo que o usuário favoritou
+//     folders: [{ id, name, icon }],       // pastas criadas por ele
+//     folderOf: { [nodeId]: folderId }     // em que pasta cada favorita está
+//   }
+//
+// Uma favorita sem entrada em `folderOf` fica no grupo "Sem pasta".
 const favDoc = (userId) => doc(db, 'favorites', userId)
+
+export const emptyFavData = () => ({ nodeIds: [], folders: [], folderOf: {} })
 
 export function subscribeFavorites(userId, cb, onError) {
   return onSnapshot(
     favDoc(userId),
     (snap) => {
-      cb(snap.exists() ? snap.data().nodeIds || [] : [])
+      const d = snap.exists() ? snap.data() : {}
+      cb({
+        nodeIds: Array.isArray(d.nodeIds) ? d.nodeIds : [],
+        folders: Array.isArray(d.folders) ? d.folders : [],
+        folderOf: d.folderOf && typeof d.folderOf === 'object' ? d.folderOf : {},
+      })
     },
     (err) => onError?.(err),
   )
 }
 
 export function setFavorite(userId, nodeId, isFav) {
+  const data = { nodeIds: isFav ? arrayUnion(nodeId) : arrayRemove(nodeId) }
+  // Ao desfavoritar, some também o vínculo com a pasta.
+  if (!isFav) data.folderOf = { [nodeId]: deleteField() }
+  return setDoc(favDoc(userId), data, { merge: true })
+}
+
+// Salva a lista de pastas. `unassignIds` desvincula favoritas de sua pasta —
+// usado ao excluir uma pasta, cujos itens voltam para "Sem pasta".
+export function saveFavFolders(userId, folders, unassignIds = []) {
+  const data = { folders }
+  if (unassignIds.length) {
+    data.folderOf = Object.fromEntries(
+      unassignIds.map((id) => [id, deleteField()]),
+    )
+  }
+  return setDoc(favDoc(userId), data, { merge: true })
+}
+
+// Move uma favorita para uma pasta (folderId vazio = "Sem pasta").
+export function setFavFolderOf(userId, nodeId, folderId) {
   return setDoc(
     favDoc(userId),
-    { nodeIds: isFav ? arrayUnion(nodeId) : arrayRemove(nodeId) },
+    { folderOf: { [nodeId]: folderId || deleteField() } },
     { merge: true },
   )
 }

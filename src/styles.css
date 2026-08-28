@@ -1213,6 +1213,279 @@ body {
   line-height: 1.5;
 }
 
+/* ---------- Pastas de favoritas ---------- */
+.fav-folder-row .menu-label {
+  color: #fbbf24;
+  font-weight: 600;
+}
+.fav-folder-row.loose .menu-label {
+  color: var(--muted);
+  font-weight: 500;
+}
+.fav-empty.deep {
+  padding-left: 56px;
+}
+.fav-header .menu-actions button {
+  font-size: 15px;
+  line-height: 1;
+}
+
+/* Escolher a pasta ao mover uma favorita */
+.folder-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.folder-choice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+.folder-choice:hover {
+  border-color: var(--accent);
+}
+.folder-choice.selected {
+  border-color: #fbbf24;
+  background: rgba(251, 191, 36, 0.1);
+}
+.folder-new {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+.folder-new .field {
+  flex: 1;
+  margin: 0;
+}
+
+/* ---------- Página sobreposta (contribuidores) ---------- */
+.page-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  overflow: auto;
+  background: radial-gradient(circle at 50% -10%, #13213c 0%, var(--bg) 60%);
+  padding: 18px 26px 40px;
+}
+.page-overlay .mask-back {
+  display: block;
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 6px 8px 6px 0;
+  cursor: pointer;
+}
+.page-head {
+  max-width: 860px;
+  margin: 0 auto 18px;
+}
+.page-title {
+  margin: 6px 0 4px;
+  font-size: 24px;
+}
+.page-sub {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13.5px;
+}
+.page-body {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+/* Resumo em números */
+.rank-summary {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.rank-stat {
+  flex: 1 1 140px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.rank-stat b {
+  font-size: 22px;
+  color: var(--accent);
+}
+.rank-stat span {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+/* Pódio */
+.podium {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.podium-card {
+  flex: 1 1 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 12px;
+  text-align: center;
+}
+.podium-card.p1 {
+  border-color: #d9a441;
+  box-shadow: 0 0 0 1px rgba(217, 164, 65, 0.25),
+    0 12px 30px rgba(217, 164, 65, 0.12);
+}
+.podium-card.p2 {
+  border-color: #9fb0c7;
+}
+.podium-card.p3 {
+  border-color: #b07a4d;
+}
+.podium-card.me {
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.12), var(--panel));
+}
+.podium-medal {
+  font-size: 30px;
+  line-height: 1;
+}
+.podium-name {
+  font-weight: 700;
+  font-size: 15px;
+  word-break: break-word;
+}
+.podium-total {
+  font-size: 13px;
+  color: var(--accent);
+}
+.podium-copies {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Lista completa */
+.rank-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.rank-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+.rank-row.me {
+  border-color: var(--accent);
+}
+.rank-pos {
+  flex: 0 0 38px;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.rank-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.rank-name {
+  font-weight: 600;
+  font-size: 14.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.rank-you {
+  background: rgba(56, 189, 248, 0.18);
+  color: var(--accent);
+  border-radius: 999px;
+  padding: 1px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.rank-bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.rank-bar span {
+  display: block;
+  height: 100%;
+  min-width: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+}
+.rank-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.rank-chip {
+  font-size: 11.5px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.rank-chip.laudo {
+  color: var(--green);
+}
+.rank-chip.nota {
+  color: var(--note);
+}
+.rank-total {
+  flex: 0 0 auto;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text);
+}
+.rank-note {
+  color: var(--muted);
+  font-size: 12.5px;
+  margin: 18px 0 0;
+}
+
+/* Botão de atalho para a página de contribuidores */
+.rank-btn {
+  white-space: nowrap;
+}
+
 /* =====================================================================
    CELULAR — uma tela por vez
    Cabeçalho enxuto em cima, lista ocupando a tela toda, ações fixas
@@ -1401,6 +1674,60 @@ body {
   .icon-option {
     width: 44px;
     height: 44px;
+  }
+
+  /* ---- Contribuidores e pastas de favoritas ---- */
+  .rank-btn .rank-text {
+    display: none;
+  }
+  .rank-btn {
+    padding: 6px 10px;
+  }
+  .page-overlay {
+    padding: 10px 14px calc(30px + env(safe-area-inset-bottom));
+  }
+  .page-title {
+    font-size: 20px;
+  }
+  .rank-row {
+    padding: 10px;
+    gap: 8px;
+  }
+  .rank-pos {
+    flex-basis: 28px;
+    font-size: 15px;
+  }
+  .rank-total {
+    font-size: 17px;
+  }
+  .podium-card {
+    flex-basis: 100%;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 10px;
+    text-align: left;
+    padding: 12px;
+  }
+  .podium-medal {
+    font-size: 24px;
+  }
+  .podium-name {
+    flex: 1;
+  }
+  .folder-new {
+    flex-direction: column;
+  }
+  .folder-new .btn {
+    width: 100%;
+    min-height: 48px;
+  }
+  .folder-choice {
+    min-height: 48px;
+  }
+  /* Nas favoritas o 🗂 é a porta para as pastas: fica mesmo no celular. */
+  .fav-block .menu-row.laudo .menu-actions button,
+  .fav-block .menu-row.nota .menu-actions button {
+    display: inline-block;
   }
 
   /* ---- Tela de entrar/criar conta ---- */

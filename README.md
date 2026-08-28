@@ -53,6 +53,37 @@ O nome pode ser alterado depois: clique no seu nome no canto superior direito
 do app. Contas antigas (criadas pelo console, sem nome) aparecem como
 **"Definir meu nome"** até que um nome seja informado.
 
+## Favoritas em pastas
+
+Cada usuário tem sua própria lista de **favoritas** (☆ nas máscaras) e pode
+organizá-las em **pastas**:
+
+- **＋** ao lado de *Favoritas* cria uma pasta (nome + ícone);
+- **🗂** numa favorita a move para outra pasta — ou cria uma pasta nova já com
+  ela dentro;
+- **✎** e **🗑** renomeiam e excluem a pasta. Excluir a pasta **não** desfaz as
+  favoritas: elas voltam para **Sem pasta**;
+- Pastas recolhem/expandem clicando no nome.
+
+As pastas são **privadas** — ficam no documento do próprio usuário, junto das
+favoritas.
+
+## Maiores contribuidores
+
+O botão **🏆 Contribuidores** (canto superior direito) abre o ranking de quem
+mais alimentou o arquivo, apurado do campo `createdBy` das máscaras:
+
+- **pódio** dos três primeiros (🥇🥈🥉);
+- **lista completa** com o total de contribuições de cada pessoa, a divisão
+  entre laudos / notas / categorias e quantas vezes suas máscaras foram
+  copiadas;
+- seu nome vem marcado com **VOCÊ**.
+
+A ordem é pelo total de itens adicionados; empate desempata pelo número de
+cópias e, depois, pelo nome. Itens antigos, criados antes de o nome passar a
+ser guardado, não têm autor e aparecem só como uma observação no rodapé da
+página.
+
 ## No celular
 
 Abaixo de 720px de largura o app troca de layout — uma tela por vez, em vez
@@ -68,7 +99,9 @@ das duas colunas do desktop:
 - Modais sobem como **folha a partir de baixo**, com campos de 16px (evita o
   zoom automático do iOS) e alvos de toque de ~48px;
 - Em laudos e notas, ✎ e 🗑 saem da linha (a tela da máscara já os traz) e a
-  ☆ fica; categorias mantêm os dois.
+  ☆ fica; categorias mantêm os dois. Nas **favoritas** o 🗂 também fica — é a
+  porta para as pastas;
+- O botão de contribuidores fica só com o **🏆**.
 - **Mover itens** fica oculto: o arrastar-e-soltar depende de eventos de
   mouse e não funciona no toque.
 
@@ -90,6 +123,17 @@ Coleção única `nodes`. Cada documento é uma **categoria**, um **laudo** ou u
 ```
 
 `root` = topo do arquivo **LAUDOS**; `root_notas` = topo do arquivo **NOTAS**.
+
+As favoritas de cada usuário ficam na coleção `favorites`, um documento por
+usuário (id = uid), com as pastas dentro do mesmo documento:
+
+```
+{
+  nodeIds: ["<id da máscara>", ...],          // tudo que a pessoa favoritou
+  folders: [{ id: "f1", name: "Plantão", icon: "🔥" }, ...],
+  folderOf: { "<id da máscara>": "f1" }       // sem entrada = "Sem pasta"
+}
+```
 
 ## Rodar localmente
 

@@ -19,6 +19,9 @@ import {
   incrementCopy,
   subscribeFavorites,
   setFavorite,
+  saveFavFolders,
+  setFavFolderOf,
+  emptyFavData,
   deleteNodeCascade,
   seedIfEmpty,
 } from './db'
@@ -106,28 +109,51 @@ function snippet(content, q) {
   return (start > 0 ? '…' : '') + c.slice(start, end) + (end < c.length ? '…' : '')
 }
 
+// Ícones oferecidos para as pastas de favoritas.
+const FAV_FOLDER_ICONS = [
+  '⭐', '📁', '🗂️', '📌', '🔖', '❤️', '🔥', '💡', '🧠', '🫀',
+  '🩻', '🦴', '🔬', '💊', '🚑', '📊', '✅', '⚠️',
+  '🔴', '🟠', '🟡', '🟢', '🔵', '🟣',
+]
+
 // Favoritas guardadas neste navegador. Servem de cache imediato e de reserva
 // caso o Firestore recuse a coleção `favorites` (regras ainda não publicadas).
 const favKey = (uid) => `favoritas:${uid}`
 
-function readLocalFavs(uid) {
-  if (!uid) return []
-  try {
-    const arr = JSON.parse(localStorage.getItem(favKey(uid)) || '[]')
-    return Array.isArray(arr) ? arr : []
-  } catch {
-    return []
+// Normaliza o que veio do cache/servidor para { nodeIds, folders, folderOf }.
+// Versões antigas guardavam só um array de ids.
+function normalizeFavs(raw) {
+  if (Array.isArray(raw)) return { nodeIds: raw, folders: [], folderOf: {} }
+  if (!raw || typeof raw !== 'object') return emptyFavData()
+  return {
+    nodeIds: Array.isArray(raw.nodeIds) ? raw.nodeIds : [],
+    folders: Array.isArray(raw.folders) ? raw.folders : [],
+    folderOf:
+      raw.folderOf && typeof raw.folderOf === 'object' ? raw.folderOf : {},
   }
 }
 
-function writeLocalFavs(uid, ids) {
+function readLocalFavs(uid) {
+  if (!uid) return emptyFavData()
+  try {
+    return normalizeFavs(JSON.parse(localStorage.getItem(favKey(uid)) || 'null'))
+  } catch {
+    return emptyFavData()
+  }
+}
+
+function writeLocalFavs(uid, fav) {
   if (!uid) return
   try {
-    localStorage.setItem(favKey(uid), JSON.stringify(ids))
+    localStorage.setItem(favKey(uid), JSON.stringify(fav))
   } catch {
     /* navegador sem armazenamento: as favoritas seguem só em memória */
   }
 }
+
+// Id curto e único para uma pasta de favoritas (criada no cliente).
+const newFolderId = () =>
+  `f${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`
 
 // Layout de celular. O CSS cuida da aparência; este hook existe para o que
 // depende de comportamento — num toque só, abrir a pasta além de selecioná-la.
@@ -423,14 +449,21 @@ function MenuApp({ user, displayName, onNameChange }) {
   const [editMode, setEditMode] = useState(false)
   const [dragId, setDragId] = useState(null) // item sendo arrastado
   const [dropId, setDropId] = useState(null) // categoria destino sob o cursor
-  // Favoritas deste usuário. Começam pelo cache local para a lista aparecer
-  // já no primeiro quadro; o Firestore assume assim que responder.
-  const [favIds, setFavIds] = useState(() => readLocalFavs(user?.uid))
+  // Favoritas deste usuário ({ nodeIds, folders, folderOf }). Começam pelo
+  // cache local para a lista aparecer já no primeiro quadro; o Firestore
+  // assume assim que responder.
+  const [fav, setFav] = useState(() => readLocalFavs(user?.uid))
   // Ligado quando o Firestore nega a coleção `favorites`: a partir daí as
   // favoritas valem só neste navegador e um aviso explica o porquê.
   const [favLocalOnly, setFavLocalOnly] = useState(false)
   const favLocalOnlyRef = useRef(false)
   const [loadError, setLoadError] = useState('')
+  // Modal das pastas de favoritas: { kind, folder?, node? }
+  const [favModal, setFavModal] = useState(null)
+  // Pastas de favoritas recolhidas (por padrão todas nascem abertas).
+  const [favCollapsed, setFavCollapsed] = useState(() => new Set())
+  // Página secundária aberta por cima do menu (ranking de contribuidores).
+  const [page, setPage] = useState(null)
 
   // Cria as categorias iniciais na primeira abertura.
   useEffect(() => {
@@ -463,14 +496,14 @@ function MenuApp({ user, displayName, onNameChange }) {
     if (!uid) return
     favLocalOnlyRef.current = false
     setFavLocalOnly(false)
-    setFavIds(readLocalFavs(uid))
+    setFav(readLocalFavs(uid))
     return subscribeFavorites(
       uid,
-      (ids) => {
+      (data) => {
         // Em modo local o servidor não manda mais no que está favoritado.
         if (favLocalOnlyRef.current) return
-        setFavIds(ids)
-        writeLocalFavs(uid, ids)
+        setFav(data)
+        writeLocalFavs(uid, data)
       },
       (err) => {
         console.error('Falha ao ler as favoritas:', err)
@@ -511,28 +544,101 @@ function MenuApp({ user, displayName, onNameChange }) {
   const viewNode = viewId ? nodeById.get(viewId) : null
 
   // Favoritas: conjunto de ids + lista resolvida (ignora ids que já não existem).
-  const favSet = useMemo(() => new Set(favIds), [favIds])
+  const favSet = useMemo(() => new Set(fav.nodeIds), [fav.nodeIds])
   const favNodes = useMemo(
-    () => favIds.map((id) => nodeById.get(id)).filter(Boolean).sort(compareSiblings),
-    [favIds, nodeById],
+    () =>
+      fav.nodeIds.map((id) => nodeById.get(id)).filter(Boolean).sort(compareSiblings),
+    [fav.nodeIds, nodeById],
   )
-  const toggleFav = (id) => {
+
+  // Favoritas separadas por pasta; `loose` são as que ainda não foram
+  // organizadas em nenhuma.
+  const favGroups = useMemo(() => {
+    const buckets = new Map(fav.folders.map((f) => [f.id, []]))
+    const loose = []
+    for (const n of favNodes) {
+      const bucket = buckets.get(fav.folderOf[n.id])
+      ;(bucket || loose).push(n)
+    }
+    return {
+      folders: fav.folders.map((f) => ({ ...f, items: buckets.get(f.id) || [] })),
+      loose,
+    }
+  }, [favNodes, fav.folders, fav.folderOf])
+
+  // Aplica uma mudança nas favoritas: responde na hora na tela e manda para o
+  // Firestore; se ele recusar, a escolha do usuário vale só neste navegador.
+  const applyFav = (next, remote) => {
     const uid = user?.uid
     if (!uid) return
-    const isFav = !favSet.has(id)
-    const next = isFav ? [...favIds, id] : favIds.filter((x) => x !== id)
-    // Responde na hora; o Firestore confirma (ou não) logo em seguida.
-    setFavIds(next)
+    setFav(next)
     writeLocalFavs(uid, next)
     if (favLocalOnlyRef.current) return
-    setFavorite(uid, id, isFav).catch((err) => {
-      console.error('Falha ao salvar a favorita:', err)
+    remote(uid).catch((err) => {
+      console.error('Falha ao salvar as favoritas:', err)
       favLocalOnlyRef.current = true
       setFavLocalOnly(true)
       // O Firestore desfaz a escrita recusada; reafirma a escolha do usuário.
-      setFavIds(next)
+      setFav(next)
       writeLocalFavs(uid, next)
     })
+  }
+
+  const toggleFav = (id) => {
+    const isFav = !favSet.has(id)
+    const nodeIds = isFav ? [...fav.nodeIds, id] : fav.nodeIds.filter((x) => x !== id)
+    const folderOf = { ...fav.folderOf }
+    if (!isFav) delete folderOf[id]
+    applyFav({ ...fav, nodeIds, folderOf }, (uid) => setFavorite(uid, id, isFav))
+  }
+
+  // ----- Pastas de favoritas -----
+  const addFavFolder = (name, icon) => {
+    const folders = [...fav.folders, { id: newFolderId(), name: name.trim(), icon }]
+    applyFav({ ...fav, folders }, (uid) => saveFavFolders(uid, folders))
+    setExpanded((e) => new Set(e).add('favorites'))
+  }
+
+  const renameFavFolder = (folderId, name, icon) => {
+    const folders = fav.folders.map((f) =>
+      f.id === folderId ? { ...f, name: name.trim(), icon } : f,
+    )
+    applyFav({ ...fav, folders }, (uid) => saveFavFolders(uid, folders))
+  }
+
+  // Exclui a pasta; as favoritas que estavam nela voltam para "Sem pasta".
+  const deleteFavFolder = (folderId) => {
+    const folders = fav.folders.filter((f) => f.id !== folderId)
+    const orphans = Object.keys(fav.folderOf).filter(
+      (id) => fav.folderOf[id] === folderId,
+    )
+    const folderOf = { ...fav.folderOf }
+    orphans.forEach((id) => delete folderOf[id])
+    applyFav({ ...fav, folders, folderOf }, (uid) =>
+      saveFavFolders(uid, folders, orphans),
+    )
+  }
+
+  // Cria uma pasta e já leva a favorita para dentro dela, numa atualização só
+  // (dois `applyFav` seguidos partiriam do mesmo estado e um perderia o outro).
+  const addFavFolderWith = (name, icon, nodeId) => {
+    const folder = { id: newFolderId(), name: name.trim(), icon }
+    const folders = [...fav.folders, folder]
+    const folderOf = { ...fav.folderOf, [nodeId]: folder.id }
+    applyFav({ ...fav, folders, folderOf }, async (uid) => {
+      await saveFavFolders(uid, folders)
+      await setFavFolderOf(uid, nodeId, folder.id)
+    })
+    setExpanded((e) => new Set(e).add('favorites'))
+  }
+
+  // Move uma favorita para outra pasta (folderId vazio = "Sem pasta").
+  const moveFavToFolder = (nodeId, folderId) => {
+    const folderOf = { ...fav.folderOf }
+    if (folderId) folderOf[nodeId] = folderId
+    else delete folderOf[nodeId]
+    applyFav({ ...fav, folderOf }, (uid) => setFavFolderOf(uid, nodeId, folderId))
+    if (folderId) setExpanded((e) => new Set(e).add(`fav:${folderId}`))
   }
   const addTargetLabel = selectedNode ? selectedNode.label : rootLabelOf(selectedId)
 
@@ -661,6 +767,13 @@ function MenuApp({ user, displayName, onNameChange }) {
         }
       : {}
 
+  const toggleFavFolder = (key) =>
+    setFavCollapsed((s) => {
+      const next = new Set(s)
+      next.has(key) ? next.delete(key) : next.add(key)
+      return next
+    })
+
   const toggle = (id) =>
     setExpanded((s) => {
       const next = new Set(s)
@@ -668,6 +781,45 @@ function MenuApp({ user, displayName, onNameChange }) {
       return next
     })
   const expand = (id) => setExpanded((s) => new Set(s).add(id))
+
+  // Uma linha de favorita (laudo/nota), com botões de mover de pasta e
+  // desfavoritar. `indent` acompanha o nível (dentro ou fora de uma pasta).
+  const renderFavRow = (n, indent) => {
+    const meta = LEAF_META[n.type] || LEAF_META.laudo
+    return (
+      <div
+        key={n.id}
+        className={`menu-row ${n.type} ${viewId === n.id ? 'viewing' : ''}`}
+        style={{ paddingLeft: indent }}
+      >
+        <span className="twist ghosted">·</span>
+        <button
+          className="menu-main"
+          onClick={() => setViewId(n.id)}
+          title={pathOf(n).join(' › ')}
+        >
+          <span className="menu-icon">{meta.icon}</span>
+          <span className="menu-label">{n.label}</span>
+          {n.copyCount > 0 && <span className="copy-badge">📋 {n.copyCount}</span>}
+        </button>
+        <div className="menu-actions">
+          <button
+            title="Mover para uma pasta"
+            onClick={() => setFavModal({ kind: 'move', node: n })}
+          >
+            🗂
+          </button>
+          <button
+            className="fav-btn on"
+            title="Desfavoritar"
+            onClick={() => toggleFav(n.id)}
+          >
+            ★
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   // Renderiza recursivamente os filhos de um nó como linhas do menu.
   const renderRows = (parentId, depth) => {
@@ -858,6 +1010,13 @@ function MenuApp({ user, displayName, onNameChange }) {
         </div>
         <div className="user-box">
           <button
+            className="btn ghost rank-btn"
+            onClick={() => setPage('contributors')}
+            title="Ver os maiores contribuidores do arquivo"
+          >
+            🏆 <span className="rank-text">Contribuidores</span>
+          </button>
+          <button
             className="user-name"
             onClick={() => setProfileOpen(true)}
             title={`${user?.email || ''} — clique para alterar seu nome`}
@@ -900,7 +1059,7 @@ function MenuApp({ user, displayName, onNameChange }) {
             />
           ) : (
             <>
-              {/* Seção de favoritas do usuário. */}
+              {/* Seção de favoritas do usuário, organizada em pastas. */}
               <div className="root-block fav-block">
                 <div
                   className="menu-row cat root fav-header"
@@ -911,7 +1070,7 @@ function MenuApp({ user, displayName, onNameChange }) {
                     title={expanded.has('favorites') ? 'Recolher' : 'Expandir'}
                     onClick={() => toggle('favorites')}
                   >
-                    {favNodes.length > 0
+                    {favNodes.length > 0 || fav.folders.length > 0
                       ? expanded.has('favorites')
                         ? '▾'
                         : '▸'
@@ -924,6 +1083,14 @@ function MenuApp({ user, displayName, onNameChange }) {
                       <span className="menu-count">{favNodes.length}</span>
                     )}
                   </span>
+                  <div className="menu-actions">
+                    <button
+                      title="Nova pasta de favoritas"
+                      onClick={() => setFavModal({ kind: 'add' })}
+                    >
+                      ＋
+                    </button>
+                  </div>
                 </div>
                 {expanded.has('favorites') && favLocalOnly && (
                   <p className="fav-warn">
@@ -933,49 +1100,115 @@ function MenuApp({ user, displayName, onNameChange }) {
                     sincronizá-las entre dispositivos.
                   </p>
                 )}
-                {expanded.has('favorites') &&
-                  (favNodes.length === 0 ? (
-                    <p className="fav-empty">
-                      Marque uma máscara com ☆ para vê-la aqui.
-                    </p>
-                  ) : (
-                    favNodes.map((n) => {
-                      const meta = LEAF_META[n.type] || LEAF_META.laudo
+                {expanded.has('favorites') && (
+                  <>
+                    {favNodes.length === 0 && fav.folders.length === 0 && (
+                      <p className="fav-empty">
+                        Marque uma máscara com ☆ para vê-la aqui — e use ＋ para
+                        criar pastas e organizá-las.
+                      </p>
+                    )}
+
+                    {favGroups.folders.map((folder) => {
+                      const key = `fav:${folder.id}`
+                      const open = !favCollapsed.has(key)
                       return (
-                        <div
-                          key={n.id}
-                          className={`menu-row ${n.type} ${
-                            viewId === n.id ? 'viewing' : ''
-                          }`}
-                          style={{ paddingLeft: 32 }}
-                        >
-                          <span className="twist ghosted">·</span>
-                          <button
-                            className="menu-main"
-                            onClick={() => setViewId(n.id)}
-                            title={pathOf(n).join(' › ')}
+                        <div key={folder.id} className="fav-folder">
+                          <div
+                            className="menu-row cat fav-folder-row"
+                            style={{ paddingLeft: 24 }}
                           >
-                            <span className="menu-icon">{meta.icon}</span>
-                            <span className="menu-label">{n.label}</span>
-                            {n.copyCount > 0 && (
-                              <span className="copy-badge">
-                                📋 {n.copyCount}
-                              </span>
-                            )}
-                          </button>
-                          <div className="menu-actions">
                             <button
-                              className="fav-btn on"
-                              title="Desfavoritar"
-                              onClick={() => toggleFav(n.id)}
+                              className="twist"
+                              title={open ? 'Recolher' : 'Expandir'}
+                              onClick={() => toggleFavFolder(key)}
                             >
-                              ★
+                              {folder.items.length > 0 ? (open ? '▾' : '▸') : '·'}
                             </button>
+                            <button
+                              className="menu-main"
+                              onClick={() => toggleFavFolder(key)}
+                              title="Abrir/fechar a pasta"
+                            >
+                              <span className="menu-icon">
+                                {folder.icon || '📁'}
+                              </span>
+                              <span className="menu-label">{folder.name}</span>
+                              {folder.items.length > 0 && (
+                                <span className="menu-count">
+                                  {folder.items.length}
+                                </span>
+                              )}
+                            </button>
+                            <div className="menu-actions">
+                              <button
+                                title="Renomear pasta"
+                                onClick={() =>
+                                  setFavModal({ kind: 'rename', folder })
+                                }
+                              >
+                                ✎
+                              </button>
+                              <button
+                                title="Excluir pasta"
+                                onClick={() =>
+                                  setFavModal({ kind: 'delete', folder })
+                                }
+                              >
+                                🗑
+                              </button>
+                            </div>
                           </div>
+                          {open &&
+                            (folder.items.length === 0 ? (
+                              <p className="fav-empty deep">
+                                Pasta vazia — use 🗂 numa favorita para trazê-la
+                                para cá.
+                              </p>
+                            ) : (
+                              folder.items.map((n) => renderFavRow(n, 44))
+                            ))}
                         </div>
                       )
-                    })
-                  ))}
+                    })}
+
+                    {favGroups.loose.length > 0 &&
+                      (fav.folders.length === 0 ? (
+                        favGroups.loose.map((n) => renderFavRow(n, 32))
+                      ) : (
+                        <div className="fav-folder">
+                          <div
+                            className="menu-row cat fav-folder-row loose"
+                            style={{ paddingLeft: 24 }}
+                          >
+                            <button
+                              className="twist"
+                              title={
+                                favCollapsed.has('fav:loose')
+                                  ? 'Expandir'
+                                  : 'Recolher'
+                              }
+                              onClick={() => toggleFavFolder('fav:loose')}
+                            >
+                              {favCollapsed.has('fav:loose') ? '▸' : '▾'}
+                            </button>
+                            <button
+                              className="menu-main"
+                              onClick={() => toggleFavFolder('fav:loose')}
+                            >
+                              <span className="menu-icon">🗃️</span>
+                              <span className="menu-label">Sem pasta</span>
+                              <span className="menu-count">
+                                {favGroups.loose.length}
+                              </span>
+                            </button>
+                          </div>
+                          {!favCollapsed.has('fav:loose') &&
+                            favGroups.loose.map((n) => renderFavRow(n, 44))}
+                        </div>
+                      ))}
+                  </>
+                )}
               </div>
 
               {ROOTS.map((root) => {
@@ -1043,6 +1276,28 @@ function MenuApp({ user, displayName, onNameChange }) {
         />
       )}
 
+      {favModal && (
+        <FavFolderModal
+          modal={favModal}
+          folders={fav.folders}
+          folderOf={fav.folderOf}
+          onCreate={addFavFolder}
+          onCreateWithNode={addFavFolderWith}
+          onRename={renameFavFolder}
+          onDelete={deleteFavFolder}
+          onMove={moveFavToFolder}
+          onClose={() => setFavModal(null)}
+        />
+      )}
+
+      {page === 'contributors' && (
+        <ContributorsPage
+          nodes={nodes}
+          me={authorName}
+          onClose={() => setPage(null)}
+        />
+      )}
+
       {profileOpen && (
         <ProfileModal
           currentName={displayName}
@@ -1050,6 +1305,336 @@ function MenuApp({ user, displayName, onNameChange }) {
           onSaved={onNameChange}
           onClose={() => setProfileOpen(false)}
         />
+      )}
+    </div>
+  )
+}
+
+// Modais das pastas de favoritas: criar, renomear, excluir e mover uma
+// favorita de pasta.
+function FavFolderModal({
+  modal,
+  folders,
+  folderOf,
+  onCreate,
+  onCreateWithNode,
+  onRename,
+  onDelete,
+  onMove,
+  onClose,
+}) {
+  const { kind, folder, node } = modal
+  const [name, setName] = useState(folder?.name || '')
+  const [icon, setIcon] = useState(folder?.icon || '⭐')
+  const [newName, setNewName] = useState('')
+
+  if (kind === 'add' || kind === 'rename') {
+    const isRename = kind === 'rename'
+    const submit = () => {
+      if (!name.trim()) return
+      isRename ? onRename(folder.id, name, icon) : onCreate(name, icon)
+      onClose()
+    }
+    return (
+      <Modal
+        title={isRename ? 'Renomear pasta' : 'Nova pasta de favoritas'}
+        onClose={onClose}
+      >
+        {!isRename && (
+          <p className="target-note">
+            Pastas organizam suas favoritas — só você as vê.
+          </p>
+        )}
+        <input
+          className="field"
+          autoFocus
+          placeholder="Nome da pasta (ex.: Plantão, Tórax, Urgência)"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && submit()}
+        />
+        <p className="picker-label">Ícone da pasta</p>
+        <div className="icon-picker">
+          {FAV_FOLDER_ICONS.map((emo) => (
+            <button
+              key={emo}
+              type="button"
+              className={`icon-option ${icon === emo ? 'selected' : ''}`}
+              onClick={() => setIcon(emo)}
+            >
+              {emo}
+            </button>
+          ))}
+        </div>
+        <div className="modal-actions">
+          <button className="btn ghost" onClick={onClose}>
+            Cancelar
+          </button>
+          <button
+            className="btn primary"
+            disabled={!name.trim()}
+            onClick={submit}
+          >
+            {isRename ? 'Salvar' : 'Criar pasta'}
+          </button>
+        </div>
+      </Modal>
+    )
+  }
+
+  if (kind === 'delete') {
+    return (
+      <Modal title="Excluir pasta" onClose={onClose}>
+        <p className="confirm-text">
+          Excluir a pasta <b>{folder.name}</b>? As favoritas que estão nela
+          continuam favoritas — voltam para <b>Sem pasta</b>.
+        </p>
+        <div className="modal-actions">
+          <button className="btn ghost" onClick={onClose}>
+            Cancelar
+          </button>
+          <button
+            className="btn danger"
+            onClick={() => {
+              onDelete(folder.id)
+              onClose()
+            }}
+          >
+            Excluir
+          </button>
+        </div>
+      </Modal>
+    )
+  }
+
+  if (kind === 'move') {
+    const current = folderOf[node.id] || ''
+    const choose = (folderId) => {
+      onMove(node.id, folderId)
+      onClose()
+    }
+    const createAndMove = () => {
+      if (!newName.trim()) return
+      onCreateWithNode(newName, '⭐', node.id)
+      onClose()
+    }
+    return (
+      <Modal title={`Mover “${node.label}”`} onClose={onClose}>
+        <p className="target-note">Escolha a pasta de favoritas:</p>
+        <div className="folder-choices">
+          <button
+            className={`folder-choice ${!current ? 'selected' : ''}`}
+            onClick={() => choose('')}
+          >
+            <span className="menu-icon">🗃️</span>
+            <span>Sem pasta</span>
+          </button>
+          {folders.map((f) => (
+            <button
+              key={f.id}
+              className={`folder-choice ${current === f.id ? 'selected' : ''}`}
+              onClick={() => choose(f.id)}
+            >
+              <span className="menu-icon">{f.icon || '📁'}</span>
+              <span>{f.name}</span>
+            </button>
+          ))}
+        </div>
+        <p className="picker-label">Ou crie uma pasta nova</p>
+        <div className="folder-new">
+          <input
+            className="field"
+            placeholder="Nome da nova pasta"
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && createAndMove()}
+          />
+          <button
+            className="btn primary"
+            disabled={!newName.trim()}
+            onClick={createAndMove}
+          >
+            Criar e mover
+          </button>
+        </div>
+        <div className="modal-actions">
+          <button className="btn ghost" onClick={onClose}>
+            Fechar
+          </button>
+        </div>
+      </Modal>
+    )
+  }
+
+  return null
+}
+
+// Apura, a partir do acervo, quanto cada pessoa contribuiu. A autoria vem de
+// `createdBy` (o nome informado no cadastro); itens antigos, criados antes de
+// existir esse campo, ficam de fora e são contados à parte.
+function rankContributors(nodes) {
+  const byKey = new Map()
+  let anonymous = 0
+
+  for (const n of nodes) {
+    const name = (n.createdBy || '').trim()
+    if (!name) {
+      anonymous++
+      continue
+    }
+    const key = norm(name)
+    if (!byKey.has(key)) {
+      byKey.set(key, {
+        name,
+        laudos: 0,
+        notas: 0,
+        categorias: 0,
+        copies: 0,
+        total: 0,
+      })
+    }
+    const stat = byKey.get(key)
+    if (n.type === 'category') stat.categorias++
+    else if (n.type === 'nota') stat.notas++
+    else stat.laudos++
+    stat.copies += n.copyCount || 0
+    stat.total++
+  }
+
+  const list = [...byKey.values()].sort(
+    (a, b) =>
+      b.total - a.total ||
+      b.copies - a.copies ||
+      a.name.localeCompare(b.name, 'pt-BR'),
+  )
+  return { list, anonymous }
+}
+
+const MEDALS = ['🥇', '🥈', '🥉']
+
+// "1 laudo" / "2 laudos" — plural simples, só somando o "s".
+const plural = (n, singular) => `${n} ${singular}${n === 1 ? '' : 's'}`
+
+// Página dos maiores contribuidores: pódio dos três primeiros e a lista
+// completa, com o que cada um adicionou e quantas vezes foi copiado.
+function ContributorsPage({ nodes, me, onClose }) {
+  const { list, anonymous } = useMemo(() => rankContributors(nodes), [nodes])
+
+  const totals = useMemo(
+    () =>
+      list.reduce(
+        (acc, c) => ({
+          masks: acc.masks + c.laudos + c.notas,
+          copies: acc.copies + c.copies,
+        }),
+        { masks: 0, copies: 0 },
+      ),
+    [list],
+  )
+  const max = list[0]?.total || 1
+  const isMe = (c) => !!me && norm(c.name) === norm(me)
+
+  return (
+    <div className="page-overlay">
+      <div className="page-head">
+        <button className="mask-back" onClick={onClose}>
+          ‹ Voltar
+        </button>
+        <h2 className="page-title">🏆 Maiores contribuidores</h2>
+        <p className="page-sub">
+          Quem mais alimentou o arquivo — laudos, notas e categorias
+          adicionados.
+        </p>
+      </div>
+
+      {list.length === 0 ? (
+        <p className="menu-status">
+          Ainda não há contribuições creditadas. Ao adicionar um laudo ou uma
+          nota, seu nome aparece aqui.
+        </p>
+      ) : (
+        <div className="page-body">
+          <div className="rank-summary">
+            <div className="rank-stat">
+              <b>{list.length}</b>
+              <span>
+                {list.length === 1 ? 'contribuidor' : 'contribuidores'}
+              </span>
+            </div>
+            <div className="rank-stat">
+              <b>{totals.masks}</b>
+              <span>máscaras criadas</span>
+            </div>
+            <div className="rank-stat">
+              <b>{totals.copies}</b>
+              <span>cópias somadas</span>
+            </div>
+          </div>
+
+          <div className="podium">
+            {list.slice(0, 3).map((c, i) => (
+              <div
+                key={c.name}
+                className={`podium-card p${i + 1} ${isMe(c) ? 'me' : ''}`}
+              >
+                <span className="podium-medal">{MEDALS[i]}</span>
+                <span className="podium-name">{c.name}</span>
+                <span className="podium-total">
+                  {c.total} {c.total === 1 ? 'contribuição' : 'contribuições'}
+                </span>
+                <span className="podium-copies">📋 {c.copies}</span>
+              </div>
+            ))}
+          </div>
+
+          <ol className="rank-list">
+            {list.map((c, i) => (
+              <li key={c.name} className={`rank-row ${isMe(c) ? 'me' : ''}`}>
+                <span className="rank-pos">{MEDALS[i] || `${i + 1}º`}</span>
+                <div className="rank-main">
+                  <span className="rank-name">
+                    {c.name}
+                    {isMe(c) && <span className="rank-you">você</span>}
+                  </span>
+                  <div className="rank-bar">
+                    <span style={{ width: `${(c.total / max) * 100}%` }} />
+                  </div>
+                  <div className="rank-chips">
+                    {c.laudos > 0 && (
+                      <span className="rank-chip laudo">
+                        📄 {plural(c.laudos, 'laudo')}
+                      </span>
+                    )}
+                    {c.notas > 0 && (
+                      <span className="rank-chip nota">
+                        📝 {plural(c.notas, 'nota')}
+                      </span>
+                    )}
+                    {c.categorias > 0 && (
+                      <span className="rank-chip cat">
+                        📁 {c.categorias}{' '}
+                        {c.categorias === 1 ? 'categoria' : 'categorias'}
+                      </span>
+                    )}
+                    <span className="rank-chip copies">
+                      📋 {c.copies === 1 ? '1 cópia' : `${c.copies} cópias`}
+                    </span>
+                  </div>
+                </div>
+                <span className="rank-total">{c.total}</span>
+              </li>
+            ))}
+          </ol>
+
+          {anonymous > 0 && (
+            <p className="rank-note">
+              {anonymous === 1
+                ? '1 item do acervo não tem autor registrado — foi criado'
+                : `${anonymous} itens do acervo não têm autor registrado — foram criados`}{' '}
+              antes de o nome passar a ser guardado.
+            </p>
+          )}
+        </div>
       )}
     </div>
   )
